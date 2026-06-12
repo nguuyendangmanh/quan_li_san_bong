@@ -17,43 +17,46 @@ football-management-system/
 │
 ├── backend/                  # TOÀN BỘ CODE JAVA SPRING BOOT (RESTful API)
 │   ├── src/main/java/com/football/
-│   │   ├── config/           # [TV1] Code Security JWT, CORS, cấu hình hệ thống.
-│   │   ├── controller/       # Nơi định nghĩa Endpoints (API URL).
-│   │   ├── service/          # Nơi code logic tính tiền, chống trùng giờ, trừ kho nước.
-│   │   ├── repository/       # Nơi viết câu lệnh truy vấn MySQL bằng Spring Data JPA.
-│   │   ├── entity/           # Các Class Map 1-1 với Database: User, Field, Booking, Service.
-│   │   └── FootballApp.java  # File khởi động Spring Boot.
+│   │   ├── config/           # [TV1] Cấu hình Security JWT, CORS, mã hóa mật khẩu.
+│   │   ├── controller/       # Nơi định nghĩa Endpoints công khai API URL.
+│   │   ├── service/          # Logic cốt lõi (Tính tiền đa hình, chặn trùng giờ...).
+│   │   ├── repository/       # Giao tiếp với MySQL bằng Spring Data JPA.
+│   │   ├── entity/           # Class ánh xạ 1-1 với các bảng Database.
+│   │   ├── dto/              # [BỔ SUNG] Lớp hứng dữ liệu JSON (LoginRequest, BookingDTO...).
+│   │   ├── exception/        # [TV1] Tập trung bắt các lỗi hệ thống và trả về mã lỗi HTTP chuẩn.
+│   │   └── FootballApp.java  # File khởi động dự án.
 │   │
 │   ├── src/main/resources/
-│   │   ├── application.properties  # Cấu hình Port chạy app, User/Pass MySQL kết nối DB.
-│   │   ├── schema.sql        # Script gốc tạo Database 5 bảng cốt lõi.
-│   │   └── data.sql          # Script tự động tạo Data giả lập (Admin, Khách VIP, Sân, Nước) để test.
+│   │   ├── application.properties # Cấu hình kết nối MySQL Port, Username, Password.
+│   │   ├── schema.sql        # Câu lệnh tạo 5 bảng Database gốc.
+│   │   └── data.sql          # Khởi tạo sẵn tài khoản Admin, Sân mẫu, Nước uống để chạy thử.
 │   │
-│   └── pom.xml               # Quản lý thư viện Maven (MySQL, Spring Web, Spring Security, JWT).
+│   └── pom.xml               # Quản lý các dependency Maven.
 │
-├── frontend/                 # TOÀN BỘ CODE GIAO DIỆN CLIENT (HTML/CSS/JS THUẦN)
-│   ├── index.html            # [TV4] Trang chủ Khách hàng xem danh sách sân.
-│   ├── login.html            # [TV1] Trang Đăng nhập. Gọi API trả về JWT Token và Role.
-│   ├── register.html         # [TV1] Trang Đăng ký tài khoản (Dành cho Customer).
-│   ├── admin.html            # Khung Layout dùng chung cho Dashboard của Staff & Admin.
-│   ├── components.html       # File Design System chứa mẫu Nút bấm, Bảng dữ liệu để copy CSS.
+├── frontend/                 # TOÀN BỘ CODE GIAO DIỆN CLIENT (PC WEB THUẦN)
+│   ├── components.html       # [TV3 làm] Kho linh kiện mẫu để cả nhóm copy UI (Nút, Bảng, Form).
+│   ├── index.html            # Trang chủ Khách hàng xem danh sách sân và bảng giá.
+│   ├── login.html            # [TV1] Trang Đăng nhập.
+│   ├── register.html         # [TV1] Trang Đăng ký tài khoản bằng Số điện thoại.
+│   ├── admin.html            # Khung Layout Dashboard dùng chung (Admin / Staff).
 │   │
 │   ├── css/
-│   │   ├── style.css         # Style dùng chung toàn cục.
-│   │   └── dashboard.css     # Style dành riêng cho khu vực quản trị (Sidebar, Header).
+│   │   ├── style.css         # CSS dùng chung toàn hệ thống.
+│   │   └── dashboard.css     # CSS riêng cho khu vực quản trị (Sidebar, Menu).
 │   │
-│   ├── js/                   # LOGIC FRONT-END
-│   │   ├── api-config.js     # [TV1] File setup hàm fetch() chung, tự động nhét JWT Token vào Headers.
-│   │   ├── auth.js           # [TV1] Xử lý Form Login/Register, kiểm tra Role để ẩn class .admin-only.
-│   │   ├── booking.js        # [TV2] Xử lý Form đặt sân, thanh toán cọc, bắt lỗi nếu API báo trùng lịch.
-│   │   ├── field.js          # [TV4] Logic Admin Thêm/Sửa/Xóa (CRUD) cấu hình thông tin Sân và Giá.
-│   │   ├── inventory.js      # [TV3] Logic Nhân viên gọi nước uống tại quầy, cập nhật tồn kho.
-│   │   └── chart.js          # [TV5] Fetch API lấy data thống kê và vẽ biểu đồ.
-│   │
-│   └── assets/               # Chứa ảnh minh họa sân, logo, icon.
+│   └── js/                   # CHIA ĐỂ TRỊ (Đã chuẩn hóa lại đúng vai trò)
+│       ├── api-config.js     # [TV1] Setup hàm fetch() tự động đính kèm Token bảo mật.
+│       ├── auth.js           # [TV1] Logic Login/Register, ẩn nút Admin đối với Role STAFF.
+│       ├── field.js          # [TV2] Logic Admin Quản lý Sân & thuật toán cấu hình Giá động.
+│       ├── booking.js        # [TV3] Logic lưới Đặt lịch, Check-in tại quầy, thuật toán chặn trùng giờ.
+│       ├── inventory.js      # [TV4] Logic Nhân viên bán nước, gọi dịch vụ, tự động trừ kho.
+│       └── chart.js          # [TV5] Logic Admin xem biểu đồ thống kê doanh thu.
 │
-├── docs/                     # KHO TÀI LIỆU DỰ ÁN CỦA NHÓM
-│   └── README.md             # [TV5] Nơi gom file Word Báo cáo cuối kỳ, ảnh sơ đồ UML (PlantUML), file Test Cases.
+└── docs/                     # KHO TÀI LIỆU DỰ ÁN CỦA NHÓM
+    ├── README.md             # Hướng dẫn chi tiết cách cài đặt môi trường và chạy dự án.
+    ├── Postman_Collection.json # File cấu hình sẵn các link API để cả nhóm dùng chung khi test.
+    ├── Diagrams/             # Thư mục chứa các file ảnh sơ đồ UML (Use Case, Class, Sequence, ERD).
+    └── BaoCao_CuoiKy.docx    # File Word chứa nội dung báo cáo tiến độ (Mục tiêu đạt >= 100 trang).
 ```
 
 ---
