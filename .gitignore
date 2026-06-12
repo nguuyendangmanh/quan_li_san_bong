@@ -16,6 +16,16 @@ target/
 .DS_Store
 Thumbs.db
 
-# Mật khẩu database local của mỗi người (TUYỆT ĐỐI KHÔNG ĐẨY)
+# Mật khẩu database local của mỗi người
 application-dev.properties
 .env
+
+# System Logs
+*.log
+logs/
+
+# macOS temp files
+._*
+
+# Custom Tool configurations
+.antigravityrules
