@@ -1,0 +1,21 @@
+# Lõi Java / Maven
+target/
+*.class
+*.jar
+*.war
+
+# Cấu hình IDE của từng người (Không đẩy lên để tránh đụng độ)
+.idea/
+.vscode/
+*.iml
+*.project
+*.classpath
+.settings/
+
+# File hệ điều hành sinh ra rác
+.DS_Store
+Thumbs.db
+
+# Mật khẩu database local của mỗi người (TUYỆT ĐỐI KHÔNG ĐẨY)
+application-dev.properties
+.env

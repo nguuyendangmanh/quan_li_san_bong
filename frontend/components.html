@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Design System - LÁ BÙA CHỐNG VỠ GIAO DIỆN</title>
+    <!-- Mọi người link chung 1 file CSS vào đây để dùng chung class -->
+    <style>
+        /* CSS Base mẫu */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; color: white; }
+        .btn-primary { background-color: #007bff; }
+        .btn-danger { background-color: #dc3545; }
+        .table-base { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .table-base th, .table-base td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .table-base th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Kho Giao Diện Dùng Chung Của Nhóm</h1>
+    <p><i>Quy tắc: Ai code màn hình nào thì vào đây copy đoạn code HTML (class) tương ứng để gắn vào màn hình của mình, đảm bảo web đồng nhất 100%.</i></p>
+
+    <hr>
+    <h2>1. Các loại nút bấm (Buttons)</h2>
+    <button class="btn btn-primary">Nút Xanh (Lưu/Thêm mới)</button>
+    <button class="btn btn-danger">Nút Đỏ (Xóa/Hủy)</button>
+
+    <hr>
+    <h2>2. Bảng dữ liệu mẫu (Tables)</h2>
+    <table class="table-base">
+        <thead>
+            <tr>
+                <th>Cột 1 (ID)</th>
+                <th>Cột 2 (Tên)</th>
+                <th>Cột 3 (Hành động)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Dữ liệu mẫu</td>
+                <td><button class="btn btn-danger">Xóa</button></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
