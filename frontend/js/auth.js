@@ -1,8 +1,14 @@
-// Xử lý form đăng nhập
+/**
+ * ==========================================
+ * XỬ LÝ NGHIỆP VỤ ĐĂNG NHẬP (LOGIN)
+ * ==========================================
+ * Bắt sự kiện khi người dùng bấm nút "Đăng nhập" trên Form.
+ * Sử dụng async/await để gọi API Backend mà không làm đơ trình duyệt.
+ */
 const loginForm = document.getElementById('loginForm');
 if (loginForm) {
     loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Chặn hành vi tải lại trang (reload) mặc định của trình duyệt
         const phone = document.getElementById('phone').value;
         const password = document.getElementById('password').value;
         const errorDiv = document.getElementById('errorMessage');
@@ -24,17 +30,24 @@ if (loginForm) {
                 throw new Error(data.error || 'Đăng nhập thất bại');
             }
 
-            // Lưu JWT Token
+            /**
+             * BƯỚC QUAN TRỌNG: LƯU TRỮ TOKEN
+             * Lưu JWT Token và Quyền (Role) vào LocalStorage của trình duyệt.
+             * Các lần gọi API sau (như đặt sân, xem lịch) sẽ lấy Token từ đây để đính kèm vào Header.
+             */
             localStorage.setItem('jwt_token', data.token);
             localStorage.setItem('user_role', data.role);
 
-            // Phân luồng trang dựa trên Role
+            /**
+             * BƯỚC ĐIỀU HƯỚNG TRANG (ROUTING)
+             * Kiểm tra quyền của User trả về từ Backend để chuyển hướng đến trang phù hợp.
+             */
             if (data.role === 'ADMIN') {
-                window.location.href = 'admin.html';
+                window.location.href = 'admin.html'; // Admin vào trang quản trị
             } else if (data.role === 'STAFF') {
-                window.location.href = 'staff.html';
+                window.location.href = 'staff.html'; // Nhân viên vào trang quản lý
             } else {
-                window.location.href = 'index.html';
+                window.location.href = 'index.html'; // Khách hàng quay về trang chủ đặt sân
             }
 
         } catch (err) {
@@ -46,11 +59,16 @@ if (loginForm) {
     });
 }
 
-// Xử lý form đăng ký
+/**
+ * ==========================================
+ * XỬ LÝ NGHIỆP VỤ ĐĂNG KÝ (REGISTER)
+ * ==========================================
+ * Thu thập thông tin từ Form Đăng ký và gửi POST request lên API Backend.
+ */
 const registerForm = document.getElementById('registerForm');
 if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+        e.preventDefault(); // Ngăn trình duyệt tự động reload trang
         const fullName = document.getElementById('fullName').value;
         const phone = document.getElementById('phone').value;
         const email = document.getElementById('email').value;
@@ -74,10 +92,14 @@ if (registerForm) {
                 throw new Error(data.error || 'Đăng ký thất bại');
             }
 
-            // Lưu JWT Token và cho vào trang luôn
+            /**
+             * ĐĂNG NHẬP TỰ ĐỘNG SAU KHI ĐĂNG KÝ THÀNH CÔNG
+             * Lưu ngay Token do Backend cấp phát để duy trì phiên đăng nhập.
+             * Giúp tối ưu UX: Khách hàng không cần phải gõ lại mật khẩu để đăng nhập nữa.
+             */
             localStorage.setItem('jwt_token', data.token);
             localStorage.setItem('user_role', data.role);
-            window.location.href = 'index.html';
+            window.location.href = 'index.html'; // Chuyển thẳng về trang chủ
 
         } catch (err) {
             errorDiv.style.display = 'block';
