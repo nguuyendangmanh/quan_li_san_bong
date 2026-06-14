@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký - Quản Lý Sân Bóng</title>
+    <title>Đăng nhập - Quản Lý Sân Bóng</title>
     <link rel="stylesheet" href="css/global.css">
 </head>
 <body>
@@ -12,34 +12,26 @@
 
     <div class="auth-container">
         <div class="auth-header">
-            <h1>Tạo Tài Khoản</h1>
-            <p>Đăng ký để đặt sân nhanh chóng</p>
+            <h1>Đăng Nhập</h1>
+            <p>Hệ thống Quản lý Sân bóng Cao cấp</p>
         </div>
 
         <div id="errorMessage" class="error-message"></div>
 
-        <form id="registerForm">
-            <div class="input-group">
-                <label>Họ và Tên</label>
-                <input type="text" id="fullName" placeholder="Nguyễn Văn A" required>
-            </div>
+        <form id="loginForm">
             <div class="input-group">
                 <label>Số điện thoại</label>
                 <input type="text" id="phone" placeholder="Nhập số điện thoại..." required>
             </div>
             <div class="input-group">
-                <label>Email (Tùy chọn)</label>
-                <input type="email" id="email" placeholder="example@email.com">
-            </div>
-            <div class="input-group">
                 <label>Mật khẩu</label>
                 <input type="password" id="password" placeholder="••••••••" required>
             </div>
-            <button type="submit" class="btn-primary" id="registerBtn">Đăng ký ngay</button>
+            <button type="submit" class="btn-primary" id="loginBtn">Đăng nhập ngay</button>
         </form>
 
         <div class="auth-footer">
-            Đã có tài khoản? <a href="login.html">Quay lại Đăng nhập</a>
+            Chưa có tài khoản? <a href="register.html">Đăng ký khách hàng mới</a>
         </div>
     </div>
 

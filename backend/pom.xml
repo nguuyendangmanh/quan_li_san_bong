@@ -45,6 +45,13 @@
 			<scope>runtime</scope>
 		</dependency>
 		
+		<!-- 4b. H2 Database (Chạy tạm khi chưa có MySQL) -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		
 		<!-- 5. Lombok (Tự sinh Getter/Setter) -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
