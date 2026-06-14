@@ -25,6 +25,9 @@ public class User {
     @Column(nullable = false, length = 20)
     private String role; 
 
+    @Column(name = "loyalty_points")
+    private Integer loyaltyPoints = 0;
+
     public User() {}
 
     public Long getId() { return id; }
@@ -39,4 +42,6 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+    public Integer getLoyaltyPoints() { return loyaltyPoints; }
+    public void setLoyaltyPoints(Integer loyaltyPoints) { this.loyaltyPoints = loyaltyPoints; }
 }

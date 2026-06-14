@@ -1,5 +1,61 @@
--- Schema được JPA/Hibernate tự tạo từ Entity class (ddl-auto=update)
--- File này để tham khảo cấu trúc bảng gốc cho MySQL khi deploy production
+-- Thiết kế Cấu trúc Database Chuẩn cho Hệ thống Quản lý Sân bóng (Source of Truth)
+-- File này được dùng làm tham chiếu gốc để các thành viên đồng bộ cấu trúc DB và Entity
 
--- Bảng users đã được JPA tự tạo từ com.football.entity.User
-SELECT 1;
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    loyalty_points INT DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS football_fields (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    field_type INT NOT NULL, /* Ví dụ: 5, 7, 11 */
+    price_per_hour DECIMAL(10, 2) NOT NULL,
+    image_url VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'AVAILABLE'
+);
+
+CREATE TABLE IF NOT EXISTS bookings (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    field_id BIGINT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    deposit_amount DECIMAL(10, 2) DEFAULT 0,
+    total_price DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'PENDING',
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (field_id) REFERENCES football_fields(id)
+);
+
+CREATE TABLE IF NOT EXISTS payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    booking_id BIGINT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_type VARCHAR(50), /* 'DEPOSIT' (Tiền cọc), 'FINAL' (Thanh toán nốt) */
+    payment_method VARCHAR(50), /* 'CASH' (Tiền mặt), 'TRANSFER' (Chuyển khoản) */
+    transaction_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id)
+);
+
+CREATE TABLE IF NOT EXISTS services (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INT DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS booking_services (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    booking_id BIGINT NOT NULL,
+    service_id BIGINT NOT NULL,
+    quantity INT NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (service_id) REFERENCES services(id)
+);
