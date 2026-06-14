@@ -23,35 +23,59 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    // Sử dụng thuật toán BCrypt để mã hóa mật khẩu
+    /**
+     * Thuật toán băm mật khẩu
+     * - Sử dụng BCrypt để mã hóa mật khẩu một chiều (không thể dịch ngược).
+     * - Khi khách hàng đăng ký, mật khẩu sẽ được băm bằng thuật toán này.
+     * - @Bean giúp Spring tự động nhận diện và tiêm (inject) vào AuthService.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Cấu hình luồng Bảo mật chính của hệ thống (Security Filter Chain)
+     * Đây là "Trạm gác" kiểm duyệt mọi Request từ Frontend gửi xuống.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            // Cho phép cấu hình CORS (Chống lỗi Cross-Origin khi Frontend gọi API)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Tắt CSRF (Vì hệ thống dùng JWT Token thay cho Session truyền thống)
             .csrf(csrf -> csrf.disable())
+            // Không lưu trạng thái Session trên Server (Stateless), hoàn toàn phụ thuộc vào JWT Token
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            // Cấu hình quy tắc phân quyền:
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**", "/error").permitAll() // Mở cửa thả tự do cho API Đăng nhập / Đăng ký và báo lỗi
-                .anyRequest().authenticated() // Tất cả các đường link khác đều bị chặn, đòi Token
+                // Mở cửa thả tự do (permitAll) cho các API Đăng nhập, Đăng ký và trang báo lỗi
+                .requestMatchers("/api/auth/**", "/error").permitAll() 
+                // Tất cả các đường link khác (Ví dụ: Đặt sân, Thanh toán...) đều bị chặn, bắt buộc phải có Token
+                .anyRequest().authenticated() 
             )
+            // Nhúng bộ lọc JWT (JwtAuthenticationFilter) vào trước bộ lọc mặc định của Spring Security
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         
         return http.build();
     }
 
-    // Chống lỗi CORS: Mở cửa cho Frontend (HTML) gọi sang Backend không bị chặn
+    /**
+     * Chống lỗi CORS: Mở cửa cho Frontend (chạy trên localhost hoặc domain khác) 
+     * có thể gọi sang Backend một cách an toàn mà không bị trình duyệt chặn.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // Cho phép tất cả các domain gọi vào API (có thể thay "*" bằng domain thực tế khi đưa lên mạng)
         configuration.setAllowedOrigins(Arrays.asList("*")); 
+        // Cho phép tất cả các phương thức HTTP
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Chấp nhận các Header quan trọng như Authorization (chứa Token) và Content-Type (dữ liệu JSON)
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Áp dụng cấu hình CORS này cho toàn bộ các endpoint (/**) của hệ thống
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
