@@ -78,4 +78,18 @@
 			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<!-- Chỉ định rõ class chứa hàm main để tránh lỗi ClassNotFoundException -->
+					<mainClass>com.football.FootballApp</mainClass>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
