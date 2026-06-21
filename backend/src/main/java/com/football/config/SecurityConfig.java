@@ -49,9 +49,9 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Cấu hình quy tắc phân quyền:
             .authorizeHttpRequests(auth -> auth
-                // Mở cửa thả tự do (permitAll) cho các API Đăng nhập, Đăng ký và trang báo lỗi
-                .requestMatchers("/api/auth/**", "/error").permitAll() 
-                // Tất cả các đường link khác (Ví dụ: Đặt sân, Thanh toán...) đều bị chặn, bắt buộc phải có Token
+                // TẠM THỜI MỞ CỬA CHO TV4 (services) VÀ TV5 (reports) ĐỂ DỄ TEST CODE (TRƯỚC KHI NỘP BÀI CÓ THỂ ĐÓNG LẠI)
+                .requestMatchers("/api/auth/**", "/error", "/api/services/**", "/api/reports/**").permitAll() 
+                // Tất cả các đường link khác (Ví dụ: Đặt sân, Lịch) đều bị chặn, bắt buộc phải có Token
                 .anyRequest().authenticated() 
             )
             // Nhúng bộ lọc JWT (JwtAuthenticationFilter) vào trước bộ lọc mặc định của Spring Security
