@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Khách VIP - Admin</title>
+    
+    <!-- CSS chung của nhóm -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #555;
+            font-weight: bold;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+
+        .nav-menu a.active {
+            background: #36A2EB;
+            color: white;
+            border-color: #36A2EB;
+        }
+
+        .table-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: bold;
+            color: #555;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* ── Badge VIP Colors ── */
+        .badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+        }
+        .badge-dong { background-color: #cd7f32; } /* Đồng */
+        .badge-bac { background-color: #9ca3af; } /* Bạc */
+        .badge-vang { background-color: #fbbf24; color: #78350f; } /* Vàng */
+        .badge-kimcuong { background-color: #8b5cf6; } /* Kim Cương */
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h1>Quản Lý Khách Hàng VIP</h1>
+            <p style="color: #666; font-size: 14px; margin-top: 5px;">Thống kê xếp hạng và điểm thưởng khách hàng</p>
+        </div>
+        <div class="nav-menu">
+            <a href="admin.html" class="active">Khách VIP</a>
+            <a href="report.html">Báo cáo doanh thu</a>
+            <!-- Sau này TV2 sẽ làm field.html và nhúng vào đây -->
+            <a href="#" onclick="alert('Module quản lý sân đang phát triển')">Quản lý Sân</a>
+        </div>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Họ và Tên</th>
+                    <th>Số điện thoại</th>
+                    <th>Điểm tích luỹ</th>
+                    <th>Hạng VIP</th>
+                </tr>
+            </thead>
+            <tbody id="customer-tbody">
+                <!-- Dữ liệu sẽ được render từ customer.js -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Guard kiểm tra quyền đăng nhập — chỉ ADMIN mới xem được trang VIP -->
+    <script>
+        (function () {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.');
+                window.location.href = 'login.html';
+                return;
+            }
+            try {
+                // Decode JWT payload (base64url) để đọc role
+                const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                if (payload.role !== 'ADMIN') {
+                    alert('Bạn không có quyền truy cập trang này. Chỉ ADMIN mới được xem.');
+                    window.location.href = 'login.html';
+                }
+            } catch (e) {
+                localStorage.removeItem('jwt_token');
+                window.location.href = 'login.html';
+            }
+        })();
+    </script>
+
+    <!-- Script kết nối API dùng chung -->
+    <script src="js/api-config.js"></script>
+    <!-- Script render khách hàng -->
+    <script src="js/customer.js"></script>
+</body>
+</html>
