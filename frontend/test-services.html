@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Test API Kho Nước - TV4</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f0f2f5; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto; }
+        input, button { padding: 10px; margin: 5px 0; width: 100%; box-sizing: border-box; }
+        button { background: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background: #45a049; }
+        pre { background: #333; color: #fff; padding: 10px; overflow-x: auto; border-radius: 4px;}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🛠️ Bảng Điều Khiển Test API (Của TV4)</h2>
+        <p><i>Lưu ý: Để test thêm nước, bạn phải đăng nhập ở login.html trước để trình duyệt lưu Token nhé!</i></p>
+
+        <h3>1. Thêm đồ uống mới (Cần Token ADMIN)</h3>
+        <input type="text" id="name" placeholder="Tên đồ uống (VD: Sting Đỏ)">
+        <input type="number" id="price" placeholder="Giá tiền (VD: 15000)">
+        <input type="number" id="stock" placeholder="Số lượng (VD: 100)">
+        <button onclick="addService()">Thêm Vào Kho</button>
+
+        <h3>2. Danh sách đồ uống trong kho</h3>
+        <button onclick="loadServices()" style="background: #2196F3;">Tải danh sách</button>
+        <pre id="result">Bấm nút để xem kết quả...</pre>
+    </div>
+
+    <script src="js/api-config.js"></script>
+    <script>
+        // Hàm Lấy danh sách (GET)
+        async function loadServices() {
+            try {
+                const res = await fetch(API_ENDPOINTS.SERVICES);
+                const data = await res.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = "Lỗi kết nối: " + error;
+            }
+        }
+
+        // Hàm Thêm mới (POST)
+        async function addService() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert("Bạn chưa đăng nhập! Vui lòng sang trang login.html đăng nhập bằng tài khoản ADMIN trước.");
+                return;
+            }
+
+            const bodyData = {
+                name: document.getElementById('name').value,
+                price: document.getElementById('price').value,
+                stockQuantity: document.getElementById('stock').value,
+                unit: "Chai"
+            };
+
+            try {
+                const res = await fetch(API_ENDPOINTS.SERVICES, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify(bodyData)
+                });
+                
+                if (res.ok) {
+                    alert('Thêm thành công!');
+                    loadServices(); // Tải lại danh sách
+                } else {
+                    const err = await res.json();
+                    alert('Lỗi: ' + (err.error || 'Không có quyền'));
+                }
+            } catch (error) {
+                alert('Lỗi kết nối: ' + error);
+            }
+        }
+
+        // Tự động tải danh sách khi vừa mở trang
+        loadServices();
+    </script>
+</body>
+</html>

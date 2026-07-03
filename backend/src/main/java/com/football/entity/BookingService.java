@@ -27,17 +27,21 @@ public class BookingService {
     private Integer quantity;
 
     @Column(nullable = false)
+    private Double price;
+
+    @Column(nullable = false)
     private Double subtotal;
 
     // Constructor mặc định bắt buộc cho JPA
     public BookingService() {}
 
     // Constructor đầy đủ tham số
-    public BookingService(Long id, Long bookingId, Service service, Integer quantity, Double subtotal) {
+    public BookingService(Long id, Long bookingId, Service service, Integer quantity, Double price, Double subtotal) {
         this.id = id;
         this.bookingId = bookingId;
         this.service = service;
         this.quantity = quantity;
+        this.price = price;
         this.subtotal = subtotal;
     }
 
@@ -72,6 +76,14 @@ public class BookingService {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public Double getSubtotal() {
