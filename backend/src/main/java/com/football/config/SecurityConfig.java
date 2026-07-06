@@ -45,14 +45,17 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             // Tắt CSRF (Vì hệ thống dùng JWT Token thay cho Session truyền thống)
             .csrf(csrf -> csrf.disable())
+            // Tắt kiểm tra X-Frame-Options để H2 Console (dùng iframe) hiển thị được
+            .headers(headers -> headers.frameOptions(frame -> frame.disable()))
             // Không lưu trạng thái Session trên Server (Stateless), hoàn toàn phụ thuộc vào JWT Token
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // Cấu hình quy tắc phân quyền:
             .authorizeHttpRequests(auth -> auth
-                // TẠM THỜI MỞ CỬA CHO TV4 (services) VÀ TV5 (reports) ĐỂ DỄ TEST CODE (TRƯỚC KHI NỘP BÀI CÓ THỂ ĐÓNG LẠI)
-                .requestMatchers("/api/auth/**", "/error", "/api/services/**", "/api/reports/**").permitAll() 
+                // TẠM THỜI MỞ CỬA CHO TV2 (fields), TV4 (services) VÀ TV5 (reports) ĐỂ DỄ TEST CODE (TRƯỚC KHI NỘP BÀI CÓ THỂ ĐÓNG LẠI)
+                // Mở thêm /h2-console/** để xem Database khi dùng H2 (chỉ dùng khi test, ĐÓNG LẠI khi nộp bài)
+                .requestMatchers("/api/auth/**", "/error", "/api/fields/**", "/api/services/**", "/api/reports/**", "/h2-console/**").permitAll()
                 // Tất cả các đường link khác (Ví dụ: Đặt sân, Lịch) đều bị chặn, bắt buộc phải có Token
-                .anyRequest().authenticated() 
+                .anyRequest().authenticated()
             )
             // Nhúng bộ lọc JWT (JwtAuthenticationFilter) vào trước bộ lọc mặc định của Spring Security
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

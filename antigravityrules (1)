@@ -1,0 +1,11 @@
+# LƯU Ý DÀNH CHO AI KHI SINH CODE (MASTER PROMPT CONTEXT)
+- **Ngôn ngữ:** Java Spring Boot cho Backend (Controller, Service, Repository, DTO, Exception); HTML/CSS/Vanilla JS cho Frontend. DB: MySQL.
+- **Kiến trúc:** Client-Server RESTful API (JSON).
+- **Tiêu chuẩn Code:** Tên biến, class, bảng, cột dùng 100% tiếng Anh (VD: User, Field). KHÔNG dùng Vietglish.
+- **BẮT BUỘC CHÚ THÍCH (COMMENT):** Phải viết Comment giải thích chi tiết bằng Tiếng Việt cho tất cả các hàm, logic phức tạp, và các config quan trọng. Điều này để giúp các thành viên trong nhóm sinh viên dễ dàng đọc hiểu code và làm báo cáo giải trình với giảng viên.
+- **Phân quyền:** ADMIN, STAFF, CUSTOMER. Xác thực bằng JWT Token.
+- **Frontend:** Dùng fetch() gọi API đính kèm JWT Token. Giao diện bắt buộc dùng các class CSS định nghĩa tại components.html.
+- **Nguyên tắc làm việc:** Code đúng file được giao, không tùy tiện tạo chế file của người khác. Tên class phải map chuẩn 1-1 với DB schema.sql.
+# 7. PAYMENT MODULE STRICT RULES (ANTI-LOOP PREVENTION)
+- When mapping the One-to-Many relationship between `Booking` and `Payment`, you MUST use `@JsonIgnore` on the `Booking` field inside the `Payment` entity.
+- Controller responses MUST use standard DTOs (e.g., `BookingResponseDTO` containing a `List<PaymentDTO>`). NEVER return raw Entities to the frontend.
