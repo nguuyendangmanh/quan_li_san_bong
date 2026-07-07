@@ -32,7 +32,11 @@ async function fetchAPI(endpoint, options = {}) {
         }
 
         // 5. Trả dữ liệu JSON cho các TV khác dùng
-        const data = await response.json();
+        const text = await response.text();
+        if (!text) {
+            return {}; // Trả về object rỗng nếu API không có nội dung trả về (ví dụ DELETE - 204 No Content)
+        }
+        const data = JSON.parse(text);
         return data;
     } catch (error) {
         console.error('Lỗi khi gọi API:', error);

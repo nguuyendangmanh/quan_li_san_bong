@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Sân bóng – Football Management System</title>
+    <meta name="description" content="Trang quản lý sân bóng: thêm, sửa, xóa sân và cấu hình giá theo giờ vàng">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ================================================================
+           DESIGN TOKENS – Kế thừa từ global.css của dự án
+           ================================================================ */
+        :root {
+            --primary:        #0ea5e9;
+            --primary-hover:  #0284c7;
+            --success:        #22c55e;
+            --danger:         #ef4444;
+            --warning:        #f59e0b;
+            --bg-dark:        #0f172a;
+            --bg-card:        #1e293b;
+            --bg-hover:       #273449;
+            --text-main:      #f8fafc;
+            --text-muted:     #94a3b8;
+            --glass-bg:       rgba(30, 41, 59, 0.85);
+            --glass-border:   rgba(255,255,255,0.08);
+            --shadow:         0 25px 50px -12px rgba(0,0,0,0.6);
+        }
+
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Inter',sans-serif; }
+
+        body {
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ================================================================
+           HEADER / NAVBAR
+           ================================================================ */
+        .navbar {
+            background: rgba(15,23,42,0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 18px;
+        }
+        .navbar-brand .logo { font-size: 28px; }
+        .navbar-brand span { color: var(--primary); }
+        .navbar-right { display: flex; align-items: center; gap: 16px; }
+        .nav-badge {
+            background: rgba(14,165,233,0.15);
+            color: var(--primary);
+            border: 1px solid rgba(14,165,233,0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ================================================================
+           MAIN CONTENT LAYOUT
+           ================================================================ */
+        .main-content {
+            flex: 1;
+            padding: 32px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ================================================================
+           PAGE HEADER
+           ================================================================ */
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #f8fafc, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* ================================================================
+           STATS CARDS
+           ================================================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+        .stat-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            backdrop-filter: blur(8px);
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); border-color: rgba(14,165,233,0.3); }
+        .stat-icon { font-size: 32px; }
+        .stat-value { font-size: 24px; font-weight: 700; }
+        .stat-label { color: var(--text-muted); font-size: 12px; margin-top: 2px; }
+
+        /* ================================================================
+           TOOLBAR (NÚT THÊM + TÌM KIẾM)
+           ================================================================ */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-box input:focus { border-color: var(--primary); }
+        .search-box::before { content: '🔍'; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; }
+
+        /* ================================================================
+           BUTTONS
+           ================================================================ */
+        .btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn-primary  { background: var(--primary); color: white; }
+        .btn-primary:hover  { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(14,165,233,0.4); }
+        .btn-danger   { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .btn-danger:hover   { background: var(--danger); color: white; transform: translateY(-1px); }
+        .btn-price    { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .btn-price:hover    { background: var(--warning); color: #0f172a; }
+        .btn-calc     { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .btn-calc:hover     { background: var(--success); color: #0f172a; }
+        .btn-sm { padding: 6px 10px; font-size: 12px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+        /* ================================================================
+           BẢNG DỮ LIỆU (TABLE)
+           ================================================================ */
+        .table-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+        .table-base {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-base thead tr {
+            background: rgba(14,165,233,0.08);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .table-base th {
+            padding: 14px 16px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+        .table-base td {
+            padding: 14px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .table-base tbody tr:hover { background: var(--bg-hover); transition: background 0.15s; }
+        .table-base tbody tr:last-child td { border-bottom: none; }
+
+        /* ================================================================
+           BADGE TRẠNG THÁI
+           ================================================================ */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .status-available    { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .status-maintenance  { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+
+        /* ================================================================
+           ACTION BUTTONS TRONG BẢNG
+           ================================================================ */
+        .action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        /* ================================================================
+           THÔNG BÁO (ALERT MESSAGES)
+           ================================================================ */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        #fieldErrorMessage   { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); color: #f87171; }
+        #fieldSuccessMessage { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); color: #4ade80; }
+
+        /* ================================================================
+           MODAL OVERLAY
+           ================================================================ */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-box {
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: var(--shadow);
+        }
+        @keyframes modalIn { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .modal-close {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .modal-close:hover { background: rgba(239,68,68,0.2); color: #f87171; border-color: rgba(239,68,68,0.3); }
+
+        /* ================================================================
+           FORM CONTROLS TRONG MODAL
+           ================================================================ */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-grid .full-width { grid-column: 1 / -1; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            background: rgba(14,165,233,0.05);
+            box-shadow: 0 0 0 3px rgba(14,165,233,0.1);
+        }
+        .form-group select option { background: #1e293b; }
+        .form-group textarea { resize: vertical; min-height: 70px; }
+
+        /* ================================================================
+           PRICE CONFIG SECTION
+           ================================================================ */
+        .section-divider {
+            margin: 24px 0 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-divider::before,
+        .section-divider::after { content:''; flex:1; height:1px; background:var(--glass-border); }
+        .section-divider span { font-size: 12px; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+
+        .price-config-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px 80px 36px;
+            gap: 8px;
+            align-items: center;
+            padding: 8px;
+            background: rgba(245,158,11,0.05);
+            border: 1px solid rgba(245,158,11,0.15);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .price-config-row input {
+            padding: 7px 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+        }
+        .price-config-row input:focus { border-color: var(--warning); }
+        #priceConfigContainer { max-height: 220px; overflow-y: auto; padding-right: 4px; }
+
+        /* ================================================================
+           KẾT QUẢ TÍNH GIÁ
+           ================================================================ */
+        .calc-result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(14,165,233,0.05);
+            border: 1px solid rgba(14,165,233,0.2);
+            border-radius: 14px;
+            animation: slideDown 0.3s ease;
+        }
+        .calc-result-box h3 { font-size: 16px; margin-bottom: 12px; color: var(--primary); }
+        .total-price-box {
+            margin-top: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(14,165,233,0.15));
+            border: 1px solid rgba(34,197,94,0.3);
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            color: #4ade80;
+        }
+
+        /* Modal tính giá */
+        .calc-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        /* ================================================================
+           MODAL XEM GIỜ VÀNG (PRICE CONFIG MODAL)
+           ================================================================ */
+        .golden-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            background: rgba(245,158,11,0.15);
+            border: 1px solid rgba(245,158,11,0.3);
+            border-radius: 6px;
+            color: #fbbf24;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* ================================================================
+           EMPTY STATE
+           ================================================================ */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .empty-icon { font-size: 56px; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<!-- ===================== NAVBAR ===================== -->
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="logo">⚽</span>
+        Quản Lý <span>Sân Bóng</span>
+    </div>
+    <div class="navbar-right">
+        <span class="nav-badge">👤 TV2 – Admin</span>
+        <a href="login.html" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
+    </div>
+</nav>
+
+<!-- ===================== MAIN ===================== -->
+<main class="main-content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1>⚽ Quản lý Sân bóng</h1>
+            <p>Thêm, sửa, xóa sân và cấu hình giá theo khung giờ vàng</p>
+        </div>
+        <button class="btn btn-primary" id="btnOpenCreate" onclick="openCreateModal()">
+            ＋ Thêm sân mới
+        </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid">
+        <div class="stat-card">
+            <div class="stat-icon">🏟️</div>
+            <div>
+                <div class="stat-value" id="statTotal">–</div>
+                <div class="stat-label">Tổng số sân</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div>
+                <div class="stat-value" id="statAvailable">–</div>
+                <div class="stat-label">Đang hoạt động</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">🔧</div>
+            <div>
+                <div class="stat-value" id="statMaintenance">–</div>
+                <div class="stat-label">Đang bảo trì</div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div>
+                <div class="stat-value" id="statGolden">–</div>
+                <div class="stat-label">Có giờ vàng</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thông báo -->
+    <div id="fieldErrorMessage" class="alert"></div>
+    <div id="fieldSuccessMessage" class="alert"></div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm sân..." oninput="filterFields()">
+        </div>
+        <select id="filterType" class="btn" style="background:var(--glass-bg); color:var(--text-main); border:1px solid var(--glass-border);" onchange="filterFields()">
+            <option value="">Tất cả loại sân</option>
+            <option value="5">Sân 5 người</option>
+            <option value="7">Sân 7 người</option>
+            <option value="11">Sân 11 người</option>
+        </select>
+        <select id="filterStatus" class="btn" style="background:var(--glass-bg); color:var(--text-main); border:1px solid var(--glass-border);" onchange="filterFields()">
+            <option value="">Tất cả trạng thái</option>
+            <option value="AVAILABLE">Đang hoạt động</option>
+            <option value="MAINTENANCE">Bảo trì</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadFields()">🔄 Tải lại</button>
+    </div>
+
+    <!-- Bảng dữ liệu -->
+    <div class="table-card">
+        <table class="table-base">
+            <thead>
+                <tr>
+                    <th>Ảnh sân</th>
+                    <th>Tên sân & Địa chỉ</th>
+                    <th>Loại sân</th>
+                    <th>Giá gốc / giờ</th>
+                    <th>Giờ vàng</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="fieldTableBody">
+                <tr><td colspan="7" style="text-align:center; padding:40px; color:var(--text-muted);">⏳ Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</main>
+
+<!-- ================================================================
+     MODAL 1: THÊM / SỬA SÂN
+     ================================================================ -->
+<div class="modal-overlay" id="fieldModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title" id="fieldModalTitle">Thêm Sân Mới</h2>
+            <button class="modal-close" onclick="hideModal('fieldModal')">✕</button>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label>Tên sân</label>
+                <input type="text" id="fieldName" placeholder="VD: Sân A, Sân VIP 1...">
+            </div>
+            <div class="form-group full-width">
+                <label>Địa chỉ</label>
+                <input type="text" id="fieldAddress" placeholder="VD: 123 Đường bóng đá, Quận 1">
+            </div>
+            <div class="form-group full-width">
+                <label>Link ảnh (URL)</label>
+                <input type="text" id="fieldImageUrl" placeholder="VD: https://images.unsplash.com/...">
+            </div>
+            <div class="form-group">
+                <label>Loại sân</label>
+                <select id="fieldType">
+                    <option value="5">Sân 5 người</option>
+                    <option value="7">Sân 7 người</option>
+                    <option value="11">Sân 11 người</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Trạng thái</label>
+                <select id="fieldStatus">
+                    <option value="AVAILABLE">✅ Đang hoạt động</option>
+                    <option value="MAINTENANCE">🔧 Đang bảo trì</option>
+                </select>
+            </div>
+            <div class="form-group full-width">
+                <label>Giá thuê gốc (VND / giờ)</label>
+                <input type="number" id="fieldBasePrice" placeholder="VD: 200000" min="0" step="10000">
+            </div>
+            <div class="form-group full-width">
+                <label>Mô tả</label>
+                <textarea id="fieldDescription" placeholder="Mô tả tiện nghi, vị trí, ghi chú..."></textarea>
+            </div>
+        </div>
+
+        <!-- Cấu hình giờ vàng -->
+        <div class="section-divider"><span>⭐ Cấu hình Giờ Vàng (tùy chọn)</span></div>
+
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">
+            Giá thực = Giá gốc × Hệ số. VD: Hệ số 1.5 = tăng 50% trong khung giờ đó.
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 80px 80px 80px 36px; gap:8px; padding:0 4px; margin-bottom:6px;">
+            <span style="font-size:11px; color:var(--text-muted);">Nhãn</span>
+            <span style="font-size:11px; color:var(--text-muted);">Từ giờ</span>
+            <span style="font-size:11px; color:var(--text-muted);">Đến giờ</span>
+            <span style="font-size:11px; color:var(--text-muted);">Hệ số ×</span>
+            <span></span>
+        </div>
+        <div id="priceConfigContainer"></div>
+
+        <button class="btn btn-price btn-sm" style="margin-top:8px;" onclick="addPriceConfigRow()">
+            ＋ Thêm khung giờ vàng
+        </button>
+
+        <div class="modal-footer">
+            <button class="btn" style="background:rgba(255,255,255,0.05); color:var(--text-muted);" onclick="hideModal('fieldModal')">Hủy</button>
+            <button class="btn btn-primary" id="saveFieldBtn" onclick="saveField()">💾 Lưu sân</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================
+     MODAL 2: XEM CẤU HÌNH GIỜ VÀNG
+     ================================================================ -->
+<div class="modal-overlay" id="priceConfigModal">
+    <div class="modal-box" style="max-width:500px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="priceConfigModalTitle">Cấu hình Giờ Vàng</h2>
+            <button class="modal-close" onclick="hideModal('priceConfigModal')">✕</button>
+        </div>
+        <div id="priceConfigList"></div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" onclick="hideModal('priceConfigModal')">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<!-- ================================================================
+     MODAL 3: TÍNH GIÁ ĐA HÌNH
+     ================================================================ -->
+<div class="modal-overlay" id="calcModal">
+    <div class="modal-box" style="max-width:520px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="calcModalTitle">🧮 Tính Giá Thuê Sân</h2>
+            <button class="modal-close" onclick="hideModal('calcModal')">✕</button>
+        </div>
+
+        <p style="color:var(--text-muted); font-size:13px; margin-bottom:4px;">
+            Nhập khoảng giờ muốn đặt. Hệ thống tự tính giá theo thuật toán giờ vàng.
+        </p>
+
+        <input type="hidden" id="calcFieldId">
+        <div class="calc-inputs">
+            <div class="form-group">
+                <label>⏰ Giờ bắt đầu (0–23)</label>
+                <input type="number" id="calcStartHour" min="0" max="23" value="16" placeholder="VD: 16">
+            </div>
+            <div class="form-group">
+                <label>⏰ Giờ kết thúc (1–24)</label>
+                <input type="number" id="calcEndHour" min="1" max="24" value="19" placeholder="VD: 19">
+            </div>
+        </div>
+
+        <div class="modal-footer" style="margin-top:16px; padding-top:16px;">
+            <button class="btn" style="background:rgba(255,255,255,0.05); color:var(--text-muted);" onclick="hideModal('calcModal')">Hủy</button>
+            <button class="btn btn-calc" id="calcBtn" onclick="calculatePrice()">🧮 Tính Giá Ngay</button>
+        </div>
+
+        <!-- Kết quả hiển thị ở đây -->
+        <div id="calcResult"></div>
+    </div>
+</div>
+
+<!-- ================================================================
+     JAVASCRIPT
+     ================================================================ -->
+<script src="js/api-config.js"></script>
+<script>
+/**
+ * Override hàm loadFields() để cập nhật thêm Stats Cards
+ * sau khi render bảng xong.
+ */
+const _originalRenderFieldTable = window.renderFieldTable;
+</script>
+<script src="js/field.js"></script>
+<script>
+/**
+ * Patch thêm: Cập nhật stats cards sau khi load dữ liệu.
+ * Ghi đè hàm renderFieldTable gốc để chèn thêm logic thống kê.
+ */
+const _origRender = renderFieldTable;
+window.renderFieldTable = function(fields) {
+    // Gọi hàm render gốc
+    _origRender(fields);
+
+    // Cập nhật stats
+    document.getElementById('statTotal').textContent       = fields.length;
+    document.getElementById('statAvailable').textContent   = fields.filter(f => f.status === 'AVAILABLE').length;
+    document.getElementById('statMaintenance').textContent = fields.filter(f => f.status === 'MAINTENANCE').length;
+    document.getElementById('statGolden').textContent      = fields.filter(f => f.priceConfigs && f.priceConfigs.length > 0).length;
+};
+
+/**
+ * Lọc danh sách sân theo ô tìm kiếm + bộ lọc loại + trạng thái.
+ * Hoạt động trên client-side (không gọi API lại).
+ */
+function filterFields() {
+    const keyword    = document.getElementById('searchInput').value.toLowerCase();
+    const typeFilter = document.getElementById('filterType').value;
+    const statusFilter = document.getElementById('filterStatus').value;
+
+    const filtered = fieldsCache.filter(f => {
+        const matchName   = f.name.toLowerCase().includes(keyword);
+        const matchType   = typeFilter   ? f.type   === typeFilter   : true;
+        const matchStatus = statusFilter ? f.status === statusFilter : true;
+        return matchName && matchType && matchStatus;
+    });
+    _origRender(filtered);
+}
+
+/**
+ * Ghi đè renderFieldTable để thêm cột "Số giờ vàng".
+ */
+const __origRender2 = renderFieldTable;
+window.renderFieldTable = function(fields) {
+    const tbody = document.getElementById('fieldTableBody');
+    if (!tbody) return;
+
+    document.getElementById('statTotal').textContent       = fieldsCache.length;
+    document.getElementById('statAvailable').textContent   = fieldsCache.filter(f => f.status === 'AVAILABLE').length;
+    document.getElementById('statMaintenance').textContent = fieldsCache.filter(f => f.status === 'MAINTENANCE').length;
+    document.getElementById('statGolden').textContent      = fieldsCache.filter(f => f.priceConfigs && f.priceConfigs.length > 0).length;
+
+    if (fields.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7">
+            <div class="empty-state">
+                <div class="empty-icon">🏟️</div>
+                <h3>Chưa có sân bóng nào</h3>
+                <p>Bấm "＋ Thêm sân mới" để bắt đầu</p>
+            </div>
+        </td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = fields.map(field => `
+        <tr id="field-row-${field.id}">
+            <td>
+                ${field.imageUrl 
+                    ? `<img src="${field.imageUrl}" alt="Sân" style="width:60px; height:45px; object-fit:cover; border-radius:6px;">` 
+                    : `<div style="width:60px; height:45px; background:rgba(255,255,255,0.1); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:10px; color:#888;">No Image</div>`
+                }
+            </td>
+            <td>
+                <div style="font-weight:600;">${field.name}</div>
+                <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">
+                    📍 ${field.address || 'Chưa cập nhật địa chỉ'}
+                </div>
+            </td>
+            <td>
+                <span style="padding:3px 8px; background:rgba(14,165,233,0.1); border:1px solid rgba(14,165,233,0.2); border-radius:6px; font-size:12px; color:var(--primary);">
+                    ${formatFieldType(field.type)}
+                </span>
+            </td>
+            <td style="font-weight:600; color:#4ade80;">${formatCurrency(field.basePricePerHour)}</td>
+            <td>
+                ${field.priceConfigs && field.priceConfigs.length > 0
+                    ? `<span class="golden-tag">⭐ ${field.priceConfigs.length} khung giờ</span>`
+                    : `<span style="color:var(--text-muted); font-size:12px;">—</span>`
+                }
+            </td>
+            <td>
+                <span class="status-badge status-${field.status.toLowerCase()}">
+                    ${formatStatus(field.status)}
+                </span>
+            </td>
+            <td>
+                <div class="action-group">
+                    <button class="btn btn-price btn-sm" onclick="openPriceConfigModal(${field.id})" title="Xem giờ vàng">⭐</button>
+                    <button class="btn btn-calc btn-sm"  onclick="openCalculateModal(${field.id})"   title="Tính giá">🧮</button>
+                    <button class="btn btn-primary btn-sm" onclick="openEditModal(${field.id})"      title="Sửa">✏️</button>
+                    <button class="btn btn-danger btn-sm"  onclick="deleteField(${field.id})"        title="Xóa">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+};
+
+// Bấm ra ngoài modal để đóng
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) overlay.style.display = 'none';
+    });
+});
+</script>
+</body>
+</html>
