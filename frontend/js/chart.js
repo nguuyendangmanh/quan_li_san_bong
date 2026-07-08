@@ -1,4 +1,4 @@
-﻿// ================================================================
+// ================================================================
 // [TV5] chart.js -- Logic bieu do thong ke doanh thu
 // Goi API tu ReportController, dung Chart.js 4.x de ve bieu do
 // QUAN TRONG: Phu thuoc vao api-config.js (da load truoc trong HTML)
@@ -14,6 +14,10 @@ let namHienTai = new Date().getFullYear();
 
 // -- Khoi dong khi trang load xong --
 document.addEventListener('DOMContentLoaded', () => {
+    // Cau hinh mac dinh Chart.js cho Dark Theme
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.08)';
+
     const inputNam = document.getElementById('filter-year');
     if (inputNam) inputNam.value = namHienTai;
 

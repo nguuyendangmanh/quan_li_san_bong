@@ -13,186 +13,36 @@
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-    <style>
-        /* ── Layout trang ── */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-
-        h1 {
-            font-size: 24px;
-            margin-bottom: 4px;
-        }
-
-        .page-subtitle {
-            color: #666;
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        /* ── Header & Navigation ── */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .nav-menu {
-            display: flex;
-            gap: 15px;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: #555;
-            font-weight: bold;
-            padding: 8px 12px;
-            border-radius: 5px;
-            background: #fff;
-            border: 1px solid #ddd;
-        }
-
-        .nav-menu a.active {
-            background: #36A2EB;
-            color: white;
-            border-color: #36A2EB;
-        }
-
-        /* ── Bộ lọc năm ── */
-        .filter-bar {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 24px;
-            background: #fff;
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-        }
-
-        .filter-bar label {
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .filter-bar input[type="number"] {
-            width: 80px;
-            padding: 6px 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .filter-bar .btn {
-            padding: 8px 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            color: white;
-            font-size: 14px;
-        }
-
-        .filter-bar .btn-primary {
-            background-color: #007bff;
-        }
-
-        .filter-bar .btn-primary:hover {
-            background-color: #0056b3;
-        }
-
-        /* ── 6 thẻ số liệu nhanh ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-            border-left: 4px solid #007bff;
-        }
-
-        .stat-card.green  { border-left-color: #28a745; }
-        .stat-card.orange { border-left-color: #fd7e14; }
-        .stat-card.purple { border-left-color: #6f42c1; }
-        .stat-card.teal   { border-left-color: #20c997; }
-        .stat-card.red    { border-left-color: #dc3545; }
-
-        .stat-card .stat-label {
-            font-size: 12px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-
-        .stat-card .stat-value {
-            font-size: 22px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        /* ── Khu vực biểu đồ ── */
-        .chart-section {
-            background: #fff;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-            margin-bottom: 24px;
-        }
-
-        .chart-section h2 {
-            font-size: 16px;
-            margin-bottom: 4px;
-            margin-top: 0;
-        }
-
-        .chart-hint {
-            font-size: 12px;
-            color: #888;
-            margin-bottom: 14px;
-        }
-
-        .chart-error {
-            color: red;
-            font-size: 13px;
-            margin-top: 8px;
-        }
-
-        .chart-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
-        }
-
-        @media (max-width: 900px) {
-            .chart-row { grid-template-columns: 1fr; }
-        }
-    </style>
+    <!-- CSS dùng chung cho admin dashboard (Dark Theme) -->
+    <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 
-    <div class="header">
-        <div>
-            <h1>📊 Thống Kê Doanh Thu</h1>
-            <p class="page-subtitle" style="margin-bottom: 0;">Xem biểu đồ doanh thu sân bóng theo tháng, ngày và theo từng sân.</p>
+    <!-- ===================== NAVBAR ===================== -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="logo">⚽</span>
+            Báo Cáo <span>Doanh Thu</span>
         </div>
-        <div class="nav-menu">
-            <a href="admin.html">Khách VIP</a>
-            <a href="report.html" class="active">Báo cáo doanh thu</a>
-            <a href="#" onclick="alert('Module quản lý sân đang phát triển')">Quản lý Sân</a>
+        <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;">
+            <a href="admin.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Khách VIP</a>
+            <a href="report.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Báo cáo doanh thu</a>
+            <a href="field.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Quản lý Sân</a>
         </div>
-    </div>
+        <div class="navbar-right">
+            <span class="nav-badge">👤 Admin</span>
+            <a href="login.html" onclick="localStorage.removeItem('jwt_token')" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
+        </div>
+    </nav>
+
+    <!-- ===================== MAIN ===================== -->
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>📊 Thống Kê Doanh Thu</h1>
+                <p>Xem biểu đồ doanh thu sân bóng theo tháng, ngày và theo từng sân.</p>
+            </div>
+        </div>
 
     <!-- ── Bộ lọc năm ── -->
     <div class="filter-bar">
@@ -249,35 +99,35 @@
     </div>
 
     <!-- Biểu đồ đường — doanh thu từng ngày (xuất hiện sau khi click tháng) -->
-    <div class="chart-section" id="section-daily">
+    <div class="chart-section" id="section-daily" style="display:none;">
         <h2>📈 Doanh Thu Theo Ngày</h2>
         <p class="chart-hint">Click vào một cột tháng ở biểu đồ trên để xem chi tiết theo ngày tại đây.</p>
         <canvas id="chart-daily" height="100"></canvas>
         <p class="chart-error" id="chart-daily-error"></p>
     </div>
+    
+    </main>
 
     <!-- Guard kiểm tra quyền ADMIN — TV5 -->
     <script>
-        (function () {
+        function checkAuth() {
             const token = localStorage.getItem('jwt_token');
             if (!token) {
-                alert('Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.');
-                window.location.href = 'login.html';
+                window.location.replace('login.html');
                 return;
             }
             try {
-                // Decode JWT payload (base64url) để đọc role
                 const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
                 if (payload.role !== 'ADMIN') {
-                    alert('Bạn không có quyền truy cập trang này. Chỉ ADMIN mới được xem báo cáo.');
-                    window.location.href = 'login.html';
+                    window.location.replace('login.html');
                 }
             } catch (e) {
-                // Token không hợp lệ
                 localStorage.removeItem('jwt_token');
-                window.location.href = 'login.html';
+                window.location.replace('login.html');
             }
-        })();
+        }
+        window.addEventListener('pageshow', checkAuth);
+        checkAuth();
     </script>
 
     <!-- JS API config (dùng chung) -->
