@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Dịch Vụ - Admin</title>
+    
+    <!-- CSS chung của nhóm -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        .form-container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .text-danger { color: #dc3545; }
+        .font-weight-bold { font-weight: bold; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; margin-right: 5px; }
+        .btn-primary { background-color: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn-danger { background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="logo">⚽</span>
+            Quản Lý <span>Dịch Vụ</span>
+        </div>
+        <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;">
+            <a href="admin.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Khách VIP</a>
+            <a href="report.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Báo cáo doanh thu</a>
+            <a href="field.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Quản lý Sân</a>
+            <a href="services.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Nước uống/Dịch vụ</a>
+        </div>
+        <div class="navbar-right">
+            <span class="nav-badge">👤 Admin</span>
+            <a href="login.html" onclick="localStorage.removeItem('jwt_token')" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>Quản Lý Dịch Vụ & Nước Uống</h1>
+                <p>Thêm, sửa, xoá và xem danh sách nước uống trong kho</p>
+            </div>
+        </div>
+
+        <div class="form-container admin-only" id="serviceFormContainer">
+            <h3 style="margin-bottom: 15px;">Thêm/Sửa Dịch Vụ</h3>
+            <div id="formErrorMessage" style="color: red; display: none; margin-bottom: 10px;"></div>
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId">
+                <div class="form-group">
+                    <label>Tên dịch vụ/Nước uống</label>
+                    <input type="text" id="serviceName" required placeholder="VD: Nước suối">
+                </div>
+                <div class="form-group">
+                    <label>Giá bán (VNĐ)</label>
+                    <input type="number" id="servicePrice" required placeholder="VD: 10000">
+                </div>
+                <div class="form-group">
+                    <label>Số lượng tồn kho</label>
+                    <input type="number" id="serviceStock" required placeholder="VD: 50">
+                </div>
+                <button type="submit" class="btn btn-primary" style="padding: 10px 20px;">Lưu Dịch Vụ</button>
+            </form>
+        </div>
+
+        <div class="table-card">
+            <table class="table-base" id="servicesTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên Dịch Vụ</th>
+                        <th>Giá Bán</th>
+                        <th>Tồn Kho</th>
+                        <th>Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Dữ liệu sẽ được render từ inventory.js -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        function checkAuth() {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                window.location.replace('login.html');
+                return;
+            }
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                localStorage.setItem('user_role', payload.role);
+            } catch (e) {
+                localStorage.removeItem('jwt_token');
+                window.location.replace('login.html');
+            }
+        }
+        window.addEventListener('pageshow', checkAuth);
+        checkAuth();
+    </script>
+
+    <!-- Script kết nối API dùng chung -->
+    <script src="js/api-config.js"></script>
+    <!-- Script render dịch vụ -->
+    <script src="js/inventory.js"></script>
+</body>
+</html>
