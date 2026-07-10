@@ -92,4 +92,19 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
     // ── Số sân đang ACTIVE ───────────────────────────────────────────────────
     @Query(value = "SELECT COUNT(*) FROM football_fields WHERE status = 'AVAILABLE'", nativeQuery = true)
     Long demSanDangHoatDong();
+
+    // ── Kiểm tra trùng lịch ──────────────────────────────────────────────────
+    @Query("SELECT COUNT(b) FROM Booking b WHERE b.fieldId = :fieldId AND b.status NOT IN ('CANCELLED', 'REJECTED') AND (b.startTime < :endTime AND b.endTime > :startTime)")
+    Long countOverlappingBookings(@Param("fieldId") Integer fieldId, @Param("startTime") java.time.LocalDateTime startTime, @Param("endTime") java.time.LocalDateTime endTime);
+
+    // ── Lấy danh sách cho Nhân viên ──────────────────────────────────────────
+    @Query("SELECT b FROM Booking b ORDER BY b.createdAt DESC")
+    List<Booking> findAllOrderByCreatedAtDesc();
+
+    // ── Lấy danh sách cho Khách hàng ─────────────────────────────────────────
+    List<Booking> findByUserIdOrderByCreatedAtDesc(Integer userId);
+
+    // ── Lấy danh sách booking theo trạng thái và thời gian ───────────────────
+    List<Booking> findByStatusAndCreatedAtBefore(String status, java.time.LocalDateTime time);
 }
+

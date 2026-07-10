@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard – Football Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-box {
+            background: #1e293b; border: 1px solid var(--glass-border); border-radius: 20px; padding: 32px; width: 100%; max-width: 500px;
+        }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .modal-close {
+            width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;}
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-group input, .form-group select { padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; }
+        .form-group select option { background: #1e293b; }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+        
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .status-confirmed { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+        .status-checked_in { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+        .status-completed { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        
+        .action-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="logo">⚽</span>
+        Staff <span>Dashboard</span>
+    </div>
+    <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;">
+        <a href="staff.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Lịch Đặt Sân</a>
+        <a href="inventory.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Kho Nước</a>
+    </div>
+    <div class="navbar-right">
+        <span class="nav-badge" id="staffNameDisplay">👤 Staff</span>
+        <a href="login.html" onclick="localStorage.removeItem('jwt_token')" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <h1>📋 Quản lý Lịch Đặt Sân</h1>
+            <p>Xác nhận, Check-in, Bán nước & Thanh toán</p>
+        </div>
+        <button class="btn btn-primary" onclick="loadBookings()">🔄 Tải lại</button>
+    </div>
+
+    <div class="table-card">
+        <table class="table-base">
+            <thead>
+                <tr>
+                    <th>Khách Hàng</th>
+                    <th>Sân</th>
+                    <th>Thời gian</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="bookingTableBody">
+                <tr><td colspan="5" style="text-align:center; padding:40px;">⏳ Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Modal Gọi nước -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title">🥤 Gọi Thêm Dịch Vụ</h2>
+            <button class="modal-close" onclick="hideModal('orderModal')">✕</button>
+        </div>
+        <div class="form-group">
+            <label>Chọn dịch vụ</label>
+            <select id="serviceSelect"></select>
+        </div>
+        <div class="form-group">
+            <label>Số lượng</label>
+            <input type="number" id="serviceQuantity" value="1" min="1">
+        </div>
+        <input type="hidden" id="orderBookingId">
+        <div class="modal-footer">
+            <button class="btn" style="background:rgba(255,255,255,0.05); color:var(--text-muted);" onclick="hideModal('orderModal')">Hủy</button>
+            <button class="btn btn-primary" onclick="submitOrder()">🛒 Thêm vào đơn</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/api-config.js"></script>
+<script>
+// Guard
+function checkAuth() {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) { window.location.replace('login.html'); return; }
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (payload.role !== 'STAFF' && payload.role !== 'ADMIN') {
+            window.location.replace('login.html');
+        }
+    } catch (e) {
+        localStorage.removeItem('jwt_token'); window.location.replace('login.html');
+    }
+}
+checkAuth();
+
+async function loadBookings() {
+    try {
+        const res = await fetch(API_URL + '/api/bookings', {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        const data = await res.json();
+        const tbody = document.getElementById('bookingTableBody');
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có đơn đặt sân nào</td></tr>';
+            return;
+        }
+        
+        const formatStatus = (s) => {
+            switch(s) {
+                case 'PENDING': return 'Chờ duyệt';
+                case 'CONFIRMED': return 'Đã xác nhận';
+                case 'CHECKED_IN': return 'Đang đá';
+                case 'COMPLETED': return 'Hoàn thành';
+                case 'CANCELLED': return 'Đã hủy';
+                default: return s;
+            }
+        };
+
+        const formatVipTier = (tier) => {
+            const map = { DONG: '🥉 Đồng', BAC: '🥈 Bạc', VANG: '🥇 Vàng', KIMCUONG: '💎 Kim Cương' };
+            return map[tier] || tier;
+        };
+
+        tbody.innerHTML = data.map(b => {
+            const date = new Date(b.startTime).toLocaleString('vi-VN');
+            let actions = '';
+            
+            if (b.status === 'PENDING') {
+                actions += `<button class="btn btn-primary btn-sm" onclick="updateStatus(${b.id}, 'CONFIRMED')">Duyệt</button>`;
+                actions += `<button class="btn btn-danger btn-sm" onclick="updateStatus(${b.id}, 'CANCELLED')">Từ chối</button>`;
+            } else if (b.status === 'CONFIRMED') {
+                actions += `<button class="btn btn-sm" style="background:#8b5cf6; color:white;" onclick="updateStatus(${b.id}, 'CHECKED_IN')">Check-in</button>`;
+                
+                // Hủy nếu quá 30 phút mà chưa check-in
+                if (Date.now() > new Date(b.startTime).getTime() + 30 * 60000) {
+                    actions += `<button class="btn btn-danger btn-sm" onclick="updateStatus(${b.id}, 'CANCELLED')">Hủy (Không đến)</button>`;
+                }
+            } else if (b.status === 'CHECKED_IN') {
+                actions += `<button class="btn btn-price btn-sm" onclick="openOrderModal(${b.id})">🥤 Gọi nước</button>`;
+                actions += `<button class="btn btn-calc btn-sm" onclick="updateStatus(${b.id}, 'COMPLETED')">Thanh toán</button>`;
+            }
+            
+            let servicesHtml = '';
+            if (b.services && b.services.length > 0) {
+                const serviceList = b.services.map(s => `<li>${s.serviceName} x ${s.quantity}</li>`).join('');
+                servicesHtml = `<div style="font-size:11px; margin-top:5px; color:#fbbf24;"><strong>Đã đặt:</strong><ul style="margin:2px 0 0 15px; padding:0;">${serviceList}</ul></div>`;
+            }
+
+            return `
+            <tr>
+                <td>
+                    <div style="font-weight:600;">${b.customerName}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">${b.customerPhone}</div>
+                    <div style="font-size:11px; color:var(--text-muted);">${b.customerEmail || ''}</div>
+                    <div style="font-size:11px; margin-top:3px;"><span style="background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:4px;">${formatVipTier(b.customerVipTier)}</span></div>
+                    ${servicesHtml}
+                </td>
+                <td style="font-weight:600; color:var(--primary);">${b.fieldName}</td>
+                <td style="font-size:13px;">${date}</td>
+                <td><span class="status-badge status-${b.status.toLowerCase()}">${formatStatus(b.status)}</span></td>
+                <td><div class="action-group">${actions}</div></td>
+            </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        alert('Lỗi tải danh sách.');
+    }
+}
+
+async function updateStatus(id, newStatus) {
+    if (newStatus === 'COMPLETED' || newStatus === 'CANCELLED') {
+        if (!confirm('Xác nhận thao tác này?')) return;
+    }
+    try {
+        await fetch(`${API_URL}/api/bookings/${id}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') },
+            body: JSON.stringify({ status: newStatus })
+        });
+        loadBookings();
+    } catch (e) {
+        alert('Lỗi cập nhật');
+    }
+}
+
+async function loadServicesToSelect() {
+    try {
+        const res = await fetch(API_URL + '/api/services', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') } });
+        const data = await res.json();
+        const sel = document.getElementById('serviceSelect');
+        sel.innerHTML = data.filter(s => s.stockQuantity > 0).map(s => 
+            `<option value="${s.id}">${s.name} (${s.price.toLocaleString()} ₫) - Còn ${s.stockQuantity}</option>`
+        ).join('');
+    } catch (e) {}
+}
+
+function openOrderModal(bookingId) {
+    document.getElementById('orderBookingId').value = bookingId;
+    document.getElementById('serviceQuantity').value = 1;
+    document.getElementById('orderModal').style.display = 'flex';
+}
+
+function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+
+async function submitOrder() {
+    const bId = document.getElementById('orderBookingId').value;
+    const sId = document.getElementById('serviceSelect').value;
+    const qty = document.getElementById('serviceQuantity').value;
+    if (!sId || qty < 1) return;
+    
+    try {
+        const res = await fetch(API_URL + '/api/services/order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') },
+            body: JSON.stringify({
+                bookingId: Number(bId),
+                items: [{ serviceId: Number(sId), quantity: Number(qty) }]
+            })
+        });
+        if (res.ok) {
+            alert('Đã gọi đồ uống thành công!');
+            hideModal('orderModal');
+            loadBookings();
+            loadServicesToSelect(); // refresh stock
+        } else {
+            const data = await res.json();
+            alert('Lỗi: ' + data.error);
+        }
+    } catch (e) {
+        alert('Lỗi mạng');
+    }
+}
+
+window.onload = () => {
+    loadBookings();
+    loadServicesToSelect();
+};
+</script>
+</body>
+</html>

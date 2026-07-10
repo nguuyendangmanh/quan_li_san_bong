@@ -20,6 +20,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/services")
+@CrossOrigin(origins = "*")
 public class ServiceController {
 
     @Autowired
@@ -55,9 +56,10 @@ public class ServiceController {
      */
     @PostMapping
     public ResponseEntity<?> createService(@RequestBody ServiceDTO dto) {
-        if (!"ADMIN".equals(getCurrentUserRole())) {
+        String role = getCurrentUserRole();
+        if (!"ADMIN".equals(role) && !"STAFF".equals(role)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN)!\"}");
+                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN hoặc STAFF)!\"}");
         }
         try {
             Service created = inventoryService.createService(dto);
@@ -74,9 +76,10 @@ public class ServiceController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateService(@PathVariable Long id, @RequestBody ServiceDTO dto) {
-        if (!"ADMIN".equals(getCurrentUserRole())) {
+        String role = getCurrentUserRole();
+        if (!"ADMIN".equals(role) && !"STAFF".equals(role)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN)!\"}");
+                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN hoặc STAFF)!\"}");
         }
         try {
             Service updated = inventoryService.updateService(id, dto);
@@ -93,9 +96,10 @@ public class ServiceController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteService(@PathVariable Long id) {
-        if (!"ADMIN".equals(getCurrentUserRole())) {
+        String role = getCurrentUserRole();
+        if (!"ADMIN".equals(role) && !"STAFF".equals(role)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN)!\"}");
+                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN hoặc STAFF)!\"}");
         }
         try {
             inventoryService.deleteService(id);

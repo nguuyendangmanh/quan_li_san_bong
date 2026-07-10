@@ -25,7 +25,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Cộng thêm điểm tích luỹ cho khách hàng sau khi hoàn thành booking
     @Modifying
     @Transactional
-    @Query("UPDATE User u SET u.loyaltyPoints = u.loyaltyPoints + :diem WHERE u.id = :userId")
+    @Query("UPDATE User u SET u.loyaltyPoints = COALESCE(u.loyaltyPoints, 0) + :diem WHERE u.id = :userId")
     void addLoyaltyPoints(@Param("userId") Long userId, @Param("diem") int diem);
 
     // Đếm số người dùng theo role (dùng cho dashboard stats)

@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Sân Bóng – Football Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #38bdf8;
+            --primary-hover: #0ea5e9;
+            --accent: #f43f5e;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
+        body { background-color: var(--bg-dark); color: var(--text-main); line-height: 1.6; overflow-x: hidden; }
+
+        /* HEADER / NAVBAR */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 15px 5%; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo { font-size: 24px; font-weight: 800; color: white; text-decoration: none; display: flex; align-items: center; gap: 8px;}
+        .logo span { color: var(--primary); }
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: var(--text-main); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary); }
+        
+        .user-actions { display: flex; align-items: center; gap: 15px; }
+        .btn-outline { padding: 8px 16px; border: 1px solid var(--primary); color: var(--primary); border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s; }
+        .btn-outline:hover { background: var(--primary); color: var(--bg-dark); }
+        .btn-solid { padding: 8px 16px; background: var(--primary); color: var(--bg-dark); border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s; border: none; cursor: pointer; }
+        .btn-solid:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);}
+
+        /* HERO SECTION */
+        .hero {
+            margin-top: 70px; padding: 60px 5%;
+            background: linear-gradient(135deg, rgba(56,189,248,0.1) 0%, rgba(15,23,42,0) 100%);
+            display: flex; flex-direction: column; align-items: center; text-align: center;
+        }
+        .hero h1 { font-size: 48px; font-weight: 900; margin-bottom: 15px; background: -webkit-linear-gradient(45deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; margin-bottom: 30px; }
+
+        /* FIELD GRID (SHOPEE-LIKE) */
+        .container { padding: 20px 5% 60px; }
+        .section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-title::after { content: ''; height: 2px; flex: 1; background: linear-gradient(90deg, var(--glass-border), transparent); }
+        
+        .field-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;
+        }
+        
+        .field-card {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex; flex-direction: column;
+        }
+        .field-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3), 0 0 15px rgba(56,189,248,0.2);
+        }
+        
+        .field-badge {
+            position: absolute; top: 10px; left: 10px;
+            background: rgba(244, 63, 94, 0.9); color: white; padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 700;
+            backdrop-filter: blur(4px); z-index: 2;
+        }
+        
+        .field-img-wrapper { position: relative; width: 100%; padding-top: 65%; overflow: hidden; }
+        .field-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .field-card:hover .field-img { transform: scale(1.05); }
+        
+        .field-info { padding: 15px; display: flex; flex-direction: column; flex: 1; }
+        .field-title { font-size: 16px; font-weight: 600; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .field-address { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; display: flex; align-items: center; gap: 4px; }
+        
+        .field-footer { margin-top: auto; display: flex; align-items: flex-end; justify-content: space-between; }
+        .field-price-wrapper { display: flex; flex-direction: column; }
+        .field-price-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;}
+        .field-price { font-size: 18px; font-weight: 700; color: #4ade80; }
+        
+        /* MODAL */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); z-index: 200; justify-content: center; align-items: center; padding: 20px;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        
+        .modal-box {
+            background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; width: 100%; max-width: 650px; max-height: 90vh; overflow-y: auto;
+            transform: scale(0.95); transition: transform 0.3s; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .modal-overlay.active .modal-box { transform: scale(1); }
+        
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px; }
+        .modal-title { font-size: 22px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px;}
+        .modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: rgba(255,255,255,0.05); color: var(--text-muted); cursor: pointer; font-size: 16px; transition: all 0.2s; }
+        .modal-close:hover { background: rgba(244,63,94,0.2); color: var(--accent); }
+        
+        .booking-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 13px; font-weight: 600; color: var(--text-muted); }
+        .form-group input { padding: 12px 15px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: white; font-size: 15px; outline: none; transition: border 0.3s; }
+        .form-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(56,189,248,0.1); }
+        
+        /* DỊCH VỤ */
+        .services-section { background: rgba(0,0,0,0.15); border-radius: 12px; padding: 15px; margin-bottom: 20px; border: 1px solid var(--glass-border); }
+        .services-title { font-size: 15px; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .services-list { display: flex; flex-direction: column; gap: 10px; max-height: 180px; overflow-y: auto; padding-right: 5px; }
+        .service-item { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.03); padding: 10px 15px; border-radius: 8px; transition: background 0.2s; }
+        .service-item:hover { background: rgba(255,255,255,0.06); }
+        .service-info { display: flex; flex-direction: column; }
+        .service-name { font-weight: 600; font-size: 14px; }
+        .service-price { color: #4ade80; font-size: 13px; font-weight: 500; }
+        
+        .qty-control { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 4px; }
+        .qty-btn { width: 28px; height: 28px; border-radius: 6px; border: none; background: rgba(255,255,255,0.1); color: white; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+        .qty-btn:hover { background: var(--primary); }
+        .qty-val { width: 30px; text-align: center; font-weight: 600; font-size: 14px; background: transparent; border: none; color: white; outline: none;}
+
+        /* CHECKOUT SUMMARY */
+        .checkout-summary { background: linear-gradient(135deg, rgba(56,189,248,0.1), rgba(15,23,42,0.5)); border: 1px solid rgba(56,189,248,0.3); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; }
+        .summary-label { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .summary-price { font-size: 28px; font-weight: 800; color: #4ade80; }
+        
+        .modal-footer { display: flex; gap: 10px; }
+        .modal-footer .btn-solid { flex: 1; padding: 14px; font-size: 16px; }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="index.html" class="logo">⚽ <span>FootyBook</span></a>
+    <div class="nav-links">
+        <a href="#fields-section">Khám phá sân</a>
+        <a href="my-bookings.html" id="navMyBookings" style="display: none;">Lịch sử đặt sân</a>
+    </div>
+    <div class="user-actions" id="userActions">
+        <a href="login.html" class="btn-outline">Đăng nhập</a>
+        <a href="register.html" class="btn-solid">Đăng ký</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>Đặt Sân Dễ Dàng, Đá Trận Cực Máu</h1>
+    <p>Trải nghiệm hệ thống đặt sân trực tuyến nhanh chóng, trực quan với các ưu đãi giờ vàng hấp dẫn. Không cần gọi điện, chỉ vài cú click là có sân!</p>
+    <a href="#fields-section" class="btn-solid" style="padding: 12px 24px; font-size: 16px;">Khám phá ngay ↓</a>
+</section>
+
+<div class="container" id="fields-section">
+    <h2 class="section-title">🏟️ Sân Bóng Nổi Bật</h2>
+    <div class="field-grid" id="fieldGrid">
+        <div style="grid-column: 1/-1; text-align:center; padding: 40px; color: var(--text-muted);">
+            <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+            Đang tải dữ liệu sân...
+        </div>
+    </div>
+</div>
+
+<!-- ĐẶT SÂN MODAL -->
+<div class="modal-overlay" id="bookingModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title"><span id="bookingIcon">🏟️</span> <span id="bookingTitle">Đặt Sân</span></h2>
+            <button class="modal-close" onclick="closeModal()">✕</button>
+        </div>
+        
+        <input type="hidden" id="bookFieldId">
+        
+        <div class="booking-grid">
+            <div class="form-group">
+                <label>Ngày đặt sân</label>
+                <input type="date" id="bookDate">
+            </div>
+            <div class="form-group">
+                <label>&nbsp;</label>
+                <button class="btn-outline" style="height: 45px; display: flex; align-items: center; justify-content: center;" onclick="estimatePrice()">🧮 Tính thử giá sân</button>
+            </div>
+            <div class="form-group">
+                <label>Giờ bắt đầu (0-23)</label>
+                <input type="number" id="startHour" min="0" max="23" value="18">
+            </div>
+            <div class="form-group">
+                <label>Giờ kết thúc (1-24)</label>
+                <input type="number" id="endHour" min="1" max="24" value="20">
+            </div>
+        </div>
+
+        <div class="services-section">
+            <div class="services-title">🥤 Gọi kèm đồ uống / dịch vụ</div>
+            <div class="services-list" id="servicesList">
+                <div style="text-align: center; font-size: 13px; color: var(--text-muted); padding: 10px;">Đang tải dịch vụ...</div>
+            </div>
+        </div>
+        
+        <div class="checkout-summary">
+            <div class="summary-label">Tạm tính (Chưa gồm tiền nước)</div>
+            <div class="summary-price" id="priceEstimate">-- ₫</div>
+            <div style="font-size: 12px; color: #fbbf24; margin-top: 5px;">* Bạn sẽ thanh toán trực tiếp tại sân. Nếu có đặt cọc, hệ thống sẽ thông báo sau.</div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-solid" onclick="submitBooking()" id="submitBtn">✅ Chốt Đặt Sân Ngay</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/api-config.js"></script>
+<script>
+let isLoggedIn = false;
+
+// 1. Kiểm tra trạng thái đăng nhập
+function checkLoginState() {
+    const token = localStorage.getItem('jwt_token');
+    if (token) {
+        isLoggedIn = true;
+        // Parse JWT payload (optional, to get username)
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            document.getElementById('userActions').innerHTML = `
+                <span style="font-size: 14px; font-weight: 500; color: var(--primary);">👋 Chào, Khách hàng</span>
+                <a href="#" onclick="logout(event)" class="btn-outline" style="padding: 6px 12px; font-size: 13px;">Đăng xuất</a>
+            `;
+            document.getElementById('navMyBookings').style.display = 'block';
+        } catch(e) {
+            console.error('Invalid token');
+            localStorage.removeItem('jwt_token');
+            isLoggedIn = false;
+        }
+    } else {
+        document.getElementById('userActions').innerHTML = `
+            <a href="login.html" class="btn-solid" style="padding: 6px 16px; font-size: 14px;">Đăng Nhập</a>
+        `;
+    }
+}
+
+function logout(e) {
+    e.preventDefault();
+    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('user_role');
+    window.location.reload();
+}
+
+// 2. Load danh sách sân (API MỚI)
+async function loadFields() {
+    try {
+        const res = await fetch(API_URL + '/api/fields');
+        const data = await res.json();
+        const grid = document.getElementById('fieldGrid');
+        
+        const availableFields = data.filter(f => f.status === 'AVAILABLE');
+        if (availableFields.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 60px; color: var(--text-muted); background: var(--bg-card); border-radius: 12px;">Hiện chưa có sân bóng nào hoạt động.</div>';
+            return;
+        }
+        
+        grid.innerHTML = availableFields.map(f => {
+            const hasGoldenHour = f.priceConfigs && f.priceConfigs.length > 0;
+            return `
+            <div class="field-card">
+                ${hasGoldenHour ? '<div class="field-badge">🔥 Giờ vàng</div>' : ''}
+                <div class="field-img-wrapper">
+                    <img src="${f.imageUrl || 'https://images.unsplash.com/photo-1518605368461-1ee7c5320746?auto=format&fit=crop&w=600&q=80'}" class="field-img" alt="${f.name}">
+                </div>
+                <div class="field-info">
+                    <div class="field-title">${f.name}</div>
+                    <div class="field-address">📍 ${f.address || 'Đang cập nhật'} • Sân ${f.type} người</div>
+                    <div class="field-footer">
+                        <div class="field-price-wrapper">
+                            <span class="field-price-label">Giá từ</span>
+                            <span class="field-price">${f.basePricePerHour.toLocaleString('vi-VN')} ₫</span>
+                        </div>
+                        <button class="btn-solid" onclick="openBookingModal(${f.id}, '${f.name}')">Đặt Sân</button>
+                    </div>
+                </div>
+            </div>
+            `;
+        }).join('');
+    } catch (e) {
+        document.getElementById('fieldGrid').innerHTML = '<div style="grid-column: 1/-1; text-align:center; color: #f43f5e;">Lỗi kết nối tới máy chủ. Vui lòng tải lại trang.</div>';
+    }
+}
+
+// 3. Load danh sách dịch vụ / nước uống
+let availableServices = [];
+async function loadServices() {
+    try {
+        const headers = {};
+        if (isLoggedIn) headers['Authorization'] = 'Bearer ' + localStorage.getItem('jwt_token');
+        
+        const res = await fetch(API_URL + '/api/services', { headers });
+        if(res.ok) {
+            availableServices = await res.json();
+            renderServices();
+        } else {
+            document.getElementById('servicesList').innerHTML = '<div style="text-align:center; font-size:13px; color:var(--text-muted);">Vui lòng đăng nhập để xem Menu đồ uống.</div>';
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function renderServices() {
+    const list = document.getElementById('servicesList');
+    const inStock = availableServices.filter(s => s.stockQuantity > 0);
+    if(inStock.length === 0) {
+        list.innerHTML = '<div style="text-align:center; font-size:13px; color:var(--text-muted);">Hiện đang hết đồ uống.</div>';
+        return;
+    }
+    list.innerHTML = inStock.map(s => `
+        <div class="service-item">
+            <div class="service-info">
+                <span class="service-name">${s.name}</span>
+                <span class="service-price">${s.price.toLocaleString('vi-VN')} ₫ <span style="color:var(--text-muted); font-size:11px;">(Còn ${s.stockQuantity})</span></span>
+            </div>
+            <div class="qty-control">
+                <button type="button" class="qty-btn" onclick="changeQty(${s.id}, -1)">-</button>
+                <input type="number" class="qty-val" id="srv-qty-${s.id}" data-id="${s.id}" value="0" min="0" max="${s.stockQuantity}" readonly>
+                <button type="button" class="qty-btn" onclick="changeQty(${s.id}, 1)">+</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function changeQty(id, delta) {
+    const input = document.getElementById(`srv-qty-${id}`);
+    let val = parseInt(input.value) + delta;
+    if (val < 0) val = 0;
+    if (val > parseInt(input.getAttribute('max'))) val = parseInt(input.getAttribute('max'));
+    input.value = val;
+}
+
+// 4. Mở Modal Đặt Sân
+function openBookingModal(id, name) {
+    if (!isLoggedIn) {
+        alert('Bạn cần đăng nhập để đặt sân!');
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    document.getElementById('bookFieldId').value = id;
+    document.getElementById('bookingTitle').textContent = name;
+    document.getElementById('priceEstimate').textContent = '-- ₫';
+    
+    // Đặt ngày mặc định là hôm nay
+    document.getElementById('bookDate').valueAsDate = new Date();
+    
+    // Reset service inputs
+    document.querySelectorAll('.qty-val').forEach(inp => inp.value = 0);
+    
+    const overlay = document.getElementById('bookingModal');
+    overlay.style.display = 'flex';
+    // Trick for animation
+    setTimeout(() => overlay.classList.add('active'), 10);
+    
+    // Tự động tính giá tạm nghiệm
+    estimatePrice();
+}
+
+function closeModal() {
+    const overlay = document.getElementById('bookingModal');
+    overlay.classList.remove('active');
+    setTimeout(() => overlay.style.display = 'none', 300);
+}
+
+// 5. Tính dự toán giá
+async function estimatePrice() {
+    const fId = document.getElementById('bookFieldId').value;
+    const start = document.getElementById('startHour').value;
+    const end = document.getElementById('endHour').value;
+    
+    if (parseInt(start) >= parseInt(end)) {
+        document.getElementById('priceEstimate').textContent = 'Lỗi giờ!';
+        return;
+    }
+    
+    try {
+        const res = await fetch(API_URL + '/api/fields/calculate-price', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt_token')
+            },
+            body: JSON.stringify({ fieldId: Number(fId), startHour: Number(start), endHour: Number(end) })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            document.getElementById('priceEstimate').textContent = data.totalPrice.toLocaleString('vi-VN') + ' ₫';
+        } else {
+            document.getElementById('priceEstimate').textContent = 'Lỗi!';
+            alert('Lỗi: ' + data.error);
+        }
+    } catch(e) { 
+        document.getElementById('priceEstimate').textContent = 'Lỗi mạng!';
+    }
+}
+
+// 6. Chốt đơn
+async function submitBooking() {
+    if (!isLoggedIn) {
+        alert('Bạn cần đăng nhập để đặt sân!');
+        window.location.href = 'login.html';
+        return;
+    }
+    const btn = document.getElementById('submitBtn');
+    const fId = document.getElementById('bookFieldId').value;
+    const startH = document.getElementById('startHour').value;
+    const endH = document.getElementById('endHour').value;
+    const dateStr = document.getElementById('bookDate').value;
+    
+    if (!dateStr) return alert('Vui lòng chọn ngày!');
+    
+    // Parse time
+    const startISO = new Date(`${dateStr}T${startH.padStart(2, '0')}:00:00`).toISOString();
+    const endISO = new Date(`${dateStr}T${endH.padStart(2, '0')}:00:00`).toISOString();
+    
+    // Lấy danh sách nước đã gọi
+    const services = [];
+    document.querySelectorAll('.qty-val').forEach(inp => {
+        const qty = parseInt(inp.value);
+        if (qty > 0) {
+            services.push({ serviceId: parseInt(inp.getAttribute('data-id')), quantity: qty });
+        }
+    });
+    
+    btn.innerHTML = '⏳ Đang xử lý...';
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch(API_URL + '/api/bookings', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') 
+            },
+            body: JSON.stringify({
+                fieldId: Number(fId),
+                startTime: startISO,
+                endTime: endISO,
+                services: services
+            })
+        });
+        
+        if (res.ok) {
+            alert('🎉 Chúc mừng! Đặt sân thành công. Hệ thống sẽ chuyển đến Lịch sử của bạn.');
+            window.location.href = 'my-bookings.html';
+        } else {
+            const data = await res.json();
+            alert('Lỗi: ' + data.error);
+            btn.innerHTML = '✅ Chốt Đặt Sân Ngay';
+            btn.disabled = false;
+        }
+    } catch(e) { 
+        alert('Lỗi mạng');
+        btn.innerHTML = '✅ Chốt Đặt Sân Ngay';
+        btn.disabled = false;
+    }
+}
+
+// Khởi chạy
+window.onload = () => {
+    checkLoginState();
+    loadFields();
+    if(isLoggedIn) {
+        loadServices();
+    }
+};
+</script>
+</body>
+</html>

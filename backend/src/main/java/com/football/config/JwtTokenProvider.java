@@ -10,8 +10,8 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
     
-    // Khóa bí mật mã hóa Token (Tạo ngẫu nhiên an toàn)
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // Khóa bí mật mã hóa Token (Cố định để không bị lỗi 403 mỗi lần restart server)
+    private final Key key = Keys.hmacShaKeyFor("Th1sIs4V3ryS3cr3tK3yF0rJ0wtT0k3nS1gn4tur3!".getBytes());
     private final long JWT_EXPIRATION = 86400000L; // Sống 24 giờ
 
     // Sinh Token khi Đăng nhập thành công

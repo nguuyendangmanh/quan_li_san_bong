@@ -109,6 +109,7 @@ public class InventoryService {
             bookingService.setBookingId(request.getBookingId());
             bookingService.setService(service);
             bookingService.setQuantity(quantity);
+            bookingService.setPrice(service.getPrice());
             
             // Thành tiền = Đơn giá dịch vụ * Số lượng gọi
             double subtotal = service.getPrice() * quantity;

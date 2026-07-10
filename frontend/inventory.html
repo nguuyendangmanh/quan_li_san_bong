@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Kho Dịch Vụ – Football Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-box {
+            background: #1e293b; border: 1px solid var(--glass-border); border-radius: 20px; padding: 32px; width: 100%; max-width: 500px;
+        }
+        .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .modal-close {
+            width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--glass-border); background: transparent; color: var(--text-muted); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+        }
+        .modal-close:hover { background: rgba(239,68,68,0.2); color: #f87171; border-color: rgba(239,68,68,0.3); }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px;}
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .form-group input { padding: 10px 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--text-main); font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: var(--primary); background: rgba(14,165,233,0.05); }
+        .modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+        .out-of-stock { color: #f87171 !important; font-weight: bold; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="logo">⚽</span>
+        Quản Lý <span>Dịch Vụ</span>
+    </div>
+    <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;" id="navLinks">
+        <!-- JS sẽ render link tại đây -->
+    </div>
+    <div class="navbar-right">
+        <span class="nav-badge" id="userNameDisplay">👤 User</span>
+        <a href="login.html" onclick="localStorage.removeItem('jwt_token')" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <h1>🥤 Quản lý Kho Dịch Vụ</h1>
+            <p>Quản lý nước uống, đồ ăn nhẹ, cho thuê bóng/áo tập...</p>
+        </div>
+        <button class="btn btn-primary" onclick="openCreateModal()">＋ Thêm dịch vụ</button>
+    </div>
+
+    <div class="table-card">
+        <table class="table-base">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên Dịch Vụ</th>
+                    <th>Giá Bán</th>
+                    <th>Tồn Kho</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryTableBody">
+                <tr><td colspan="5" style="text-align:center; padding:40px;">⏳ Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<div class="modal-overlay" id="inventoryModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h2 class="modal-title" id="modalTitle">Thêm Dịch Vụ</h2>
+            <button class="modal-close" onclick="hideModal('inventoryModal')">✕</button>
+        </div>
+        <div class="form-group">
+            <label>Tên dịch vụ</label>
+            <input type="text" id="serviceName" placeholder="VD: Nước suối, Bò húc...">
+        </div>
+        <div class="form-group">
+            <label>Giá bán (VND)</label>
+            <input type="number" id="servicePrice" placeholder="VD: 10000" min="0">
+        </div>
+        <div class="form-group">
+            <label>Số lượng tồn kho</label>
+            <input type="number" id="serviceStock" placeholder="VD: 50" min="0">
+        </div>
+        <div class="modal-footer">
+            <button class="btn" style="background:rgba(255,255,255,0.05); color:var(--text-muted);" onclick="hideModal('inventoryModal')">Hủy</button>
+            <button class="btn btn-primary" id="saveBtn" onclick="saveService()">💾 Lưu lại</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/api-config.js"></script>
+<script>
+let currentEditingId = null;
+
+// Phân quyền
+function checkAuth() {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) { window.location.replace('login.html'); return; }
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (payload.role !== 'STAFF' && payload.role !== 'ADMIN') {
+            window.location.replace('login.html');
+            return;
+        }
+        
+        document.getElementById('userNameDisplay').innerText = payload.role === 'ADMIN' ? '👤 Admin' : '👤 Staff';
+        
+        const navLinks = document.getElementById('navLinks');
+        if (payload.role === 'ADMIN') {
+            navLinks.innerHTML = `
+                <a href="admin.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Khách VIP</a>
+                <a href="report.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Báo cáo doanh thu</a>
+                <a href="field.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Quản lý Sân</a>
+                <a href="inventory.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Kho Nước</a>
+            `;
+        } else {
+            navLinks.innerHTML = `
+                <a href="staff.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Lịch Đặt Sân</a>
+                <a href="inventory.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Kho Nước</a>
+            `;
+        }
+    } catch (e) {
+        localStorage.removeItem('jwt_token'); window.location.replace('login.html');
+    }
+}
+checkAuth();
+
+async function loadServices() {
+    try {
+        const res = await fetch(API_URL + '/api/services', {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        const data = await res.json();
+        const tbody = document.getElementById('inventoryTableBody');
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có dịch vụ nào</td></tr>';
+            return;
+        }
+        tbody.innerHTML = data.map(item => `
+            <tr>
+                <td>#${item.id}</td>
+                <td style="font-weight:600;">${item.name}</td>
+                <td style="color:#4ade80; font-weight:600;">${item.price.toLocaleString('vi-VN')} ₫</td>
+                <td class="${item.stockQuantity <= 5 ? 'out-of-stock' : ''}">${item.stockQuantity}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="openEditModal(${item.id}, '${item.name}', ${item.price}, ${item.stockQuantity})">Nhập kho / Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteService(${item.id})">Xóa</button>
+                </td>
+            </tr>
+        `).join('');
+    } catch (e) {
+        alert('Lỗi tải dữ liệu kho.');
+    }
+}
+
+function openCreateModal() {
+    currentEditingId = null;
+    document.getElementById('modalTitle').textContent = 'Thêm Dịch Vụ Mới';
+    document.getElementById('serviceName').value = '';
+    document.getElementById('servicePrice').value = '';
+    document.getElementById('serviceStock').value = '';
+    document.getElementById('inventoryModal').style.display = 'flex';
+}
+
+function openEditModal(id, name, price, stock) {
+    currentEditingId = id;
+    document.getElementById('modalTitle').textContent = 'Cập nhật Dịch Vụ';
+    document.getElementById('serviceName').value = name;
+    document.getElementById('servicePrice').value = price;
+    document.getElementById('serviceStock').value = stock;
+    document.getElementById('inventoryModal').style.display = 'flex';
+}
+
+function hideModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+async function saveService() {
+    const name = document.getElementById('serviceName').value;
+    const price = document.getElementById('servicePrice').value;
+    const stock = document.getElementById('serviceStock').value;
+    
+    const body = { name, price: Number(price), stockQuantity: Number(stock) };
+    const method = currentEditingId ? 'PUT' : 'POST';
+    const url = currentEditingId ? `${API_URL}/api/services/${currentEditingId}` : `${API_URL}/api/services`;
+
+    try {
+        const res = await fetch(url, {
+            method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('jwt_token')
+            },
+            body: JSON.stringify(body)
+        });
+        if (res.ok) {
+            hideModal('inventoryModal');
+            loadServices();
+        } else {
+            alert('Lỗi lưu dịch vụ');
+        }
+    } catch (e) {
+        alert('Lỗi mạng');
+    }
+}
+
+async function deleteService(id) {
+    if (!confirm('Bạn có chắc muốn xóa?')) return;
+    try {
+        await fetch(`${API_URL}/api/services/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        loadServices();
+    } catch (e) {}
+}
+
+window.onload = loadServices;
+</script>
+</body>
+</html>

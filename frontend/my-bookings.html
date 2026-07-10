@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch Sử Đặt Sân – Football Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .status-pending { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); }
+        .status-confirmed { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); }
+        .status-checked_in { background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3); }
+        .status-completed { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 200; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-box {
+            background: #1e293b; border: 1px solid var(--glass-border); border-radius: 20px; padding: 32px; width: 100%; max-width: 400px; text-align: center;
+        }
+        .qr-code { width: 250px; height: 250px; background: white; margin: 20px auto; padding: 10px; border-radius: 12px; }
+        .qr-code img { width: 100%; height: 100%; object-fit: contain; }
+        .modal-header { margin-bottom: 20px; font-size: 20px; font-weight: bold; }
+        .modal-desc { color: var(--text-muted); font-size: 14px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span class="logo">⚽</span>
+        Đặt <span>Sân Bóng</span>
+    </div>
+    <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;">
+        <a href="index.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Danh sách Sân</a>
+        <a href="my-bookings.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Lịch sử đặt sân</a>
+    </div>
+    <div class="navbar-right">
+        <span class="nav-badge" id="userNameDisplay">👤 Khách hàng</span>
+        <a href="login.html" onclick="localStorage.removeItem('jwt_token')" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
+    </div>
+</nav>
+
+<main class="main-content">
+    <div class="page-header">
+        <div>
+            <h1>📜 Lịch sử đặt sân của tôi</h1>
+            <p>Theo dõi trạng thái và chi phí các sân bạn đã đặt.</p>
+        </div>
+        <button class="btn btn-primary" onclick="loadMyBookings()">🔄 Tải lại</button>
+    </div>
+
+    <div class="table-card">
+        <table class="table-base">
+            <thead>
+                <tr>
+                    <th>Sân</th>
+                    <th>Thời gian</th>
+                    <th>Tiền Cọc (30%)</th>
+                    <th>Tổng Dự Kiến</th>
+                    <th>Trạng thái</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="bookingTableBody">
+                <tr><td colspan="6" style="text-align:center; padding:40px;">⏳ Đang tải dữ liệu...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<!-- Modal Thanh toán QR -->
+<div class="modal-overlay" id="qrModal">
+    <div class="modal-box">
+        <div class="modal-header">Thanh toán tiền cọc</div>
+        <div class="modal-desc">Vui lòng dùng ứng dụng ngân hàng quét mã QR bên dưới để thanh toán số tiền cọc <strong id="depositAmountDisplay" style="color: #fbbf24;"></strong></div>
+        <div class="qr-code">
+            <!-- Dùng một QR giả lập -->
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=pay_deposit" alt="QR Code">
+        </div>
+        <input type="hidden" id="payingBookingId">
+        <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+            <button class="btn" style="background:rgba(255,255,255,0.05); color:var(--text-muted);" onclick="hideQrModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="confirmPayment()">Xác nhận đã chuyển khoản</button>
+        </div>
+    </div>
+</div>
+
+<script src="js/api-config.js"></script>
+<script>
+function checkAuth() {
+    const token = localStorage.getItem('jwt_token');
+    if (!token) { window.location.replace('login.html'); }
+}
+checkAuth();
+
+async function loadMyBookings() {
+    try {
+        const res = await fetch(API_URL + '/api/bookings/my-bookings', {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        const data = await res.json();
+        const tbody = document.getElementById('bookingTableBody');
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Bạn chưa đặt sân nào.</td></tr>';
+            return;
+        }
+
+        const formatStatus = (s) => {
+            switch(s) {
+                case 'PENDING': return 'Chờ duyệt';
+                case 'CONFIRMED': return 'Đã xác nhận';
+                case 'CHECKED_IN': return 'Đang đá';
+                case 'COMPLETED': return 'Hoàn thành';
+                case 'CANCELLED': return 'Đã hủy';
+                default: return s;
+            }
+        };
+
+        tbody.innerHTML = data.map(b => {
+            const start = new Date(b.startTime);
+            const end = new Date(b.endTime);
+            const dateStr = start.toLocaleDateString('vi-VN');
+            const timeStr = `${start.getHours()}:00 - ${end.getHours()}:00`;
+            
+            let actionBtn = '';
+            if (b.status === 'PENDING') {
+                actionBtn = `
+                    <button class="btn btn-primary btn-sm" onclick="openQrModal(${b.id}, ${b.depositAmount})">Thanh toán cọc</button>
+                    <button class="btn btn-danger btn-sm" onclick="cancelBooking(${b.id})" style="margin-left: 5px;">Hủy đơn</button>
+                `;
+            }
+
+            return `
+            <tr>
+                <td style="font-weight:600; color:var(--primary);">${b.fieldName}</td>
+                <td>
+                    <div style="font-weight:600;">${dateStr}</div>
+                    <div style="font-size:12px; color:var(--text-muted);">${timeStr}</div>
+                </td>
+                <td style="font-weight:600; color:#fbbf24;">${b.depositAmount.toLocaleString()} ₫</td>
+                <td style="font-weight:600; color:#4ade80;">${b.totalPrice.toLocaleString()} ₫</td>
+                <td><span class="status-badge status-${b.status.toLowerCase()}">${formatStatus(b.status)}</span></td>
+                <td>${actionBtn}</td>
+            </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        alert('Lỗi tải danh sách.');
+    }
+}
+
+function openQrModal(id, amount) {
+    document.getElementById('payingBookingId').value = id;
+    document.getElementById('depositAmountDisplay').innerText = amount.toLocaleString() + ' ₫';
+    document.getElementById('qrModal').style.display = 'flex';
+}
+
+function hideQrModal() {
+    document.getElementById('qrModal').style.display = 'none';
+}
+
+async function confirmPayment() {
+    const id = document.getElementById('payingBookingId').value;
+    try {
+        const res = await fetch(`${API_URL}/api/bookings/${id}/pay-deposit`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        if (res.ok) {
+            alert('Thanh toán thành công! Sân của bạn đã được xác nhận.');
+            hideQrModal();
+            loadMyBookings();
+        } else {
+            alert('Có lỗi xảy ra, vui lòng thử lại.');
+        }
+    } catch (e) {
+        alert('Lỗi kết nối.');
+    }
+}
+
+async function cancelBooking(id) {
+    if (!confirm('Bạn có chắc chắn muốn hủy đặt sân này không?')) return;
+    try {
+        const res = await fetch(`${API_URL}/api/bookings/${id}/cancel`, {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        if (res.ok) {
+            alert('Hủy sân thành công!');
+            loadMyBookings();
+        } else {
+            const data = await res.json();
+            alert('Lỗi: ' + (data.error || 'Có lỗi xảy ra.'));
+        }
+    } catch (e) {
+        alert('Lỗi kết nối.');
+    }
+}
+
+window.onload = loadMyBookings;
+</script>
+</body>
+</html>

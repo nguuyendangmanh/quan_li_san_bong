@@ -27,6 +27,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/fields")
+@CrossOrigin(origins = "*")
 public class FieldController {
 
     @Autowired

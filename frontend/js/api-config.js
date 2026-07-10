@@ -1,4 +1,5 @@
 // Tất cả các thành viên khi gọi API phải nối thêm biến này ở đầu
+const API_URL = 'http://localhost:8080';
 const API_BASE_URL = 'http://localhost:8080/api';
 
 // [TV1] Hàm gọi API fetch() chung, tự động nhét Token vào Header
