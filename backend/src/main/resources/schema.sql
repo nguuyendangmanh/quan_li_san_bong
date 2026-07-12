@@ -20,6 +20,16 @@ CREATE TABLE IF NOT EXISTS football_fields (
     status VARCHAR(50) DEFAULT 'AVAILABLE'
 );
 
+CREATE TABLE IF NOT EXISTS price_configs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    field_id BIGINT NOT NULL,
+    start_hour INT NOT NULL,
+    end_hour INT NOT NULL,
+    multiplier DOUBLE NOT NULL,
+    label VARCHAR(100),
+    FOREIGN KEY (field_id) REFERENCES football_fields(id)
+);
+
 CREATE TABLE IF NOT EXISTS bookings (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id BIGINT NOT NULL,
@@ -31,16 +41,6 @@ CREATE TABLE IF NOT EXISTS bookings (
     status VARCHAR(50) DEFAULT 'PENDING',
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (field_id) REFERENCES football_fields(id)
-);
-
-CREATE TABLE IF NOT EXISTS payments (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    booking_id BIGINT NOT NULL,
-    amount DECIMAL(10, 2) NOT NULL,
-    payment_type VARCHAR(50), /* 'DEPOSIT' (Tiền cọc), 'FINAL' (Thanh toán nốt) */
-    payment_method VARCHAR(50), /* 'CASH' (Tiền mặt), 'TRANSFER' (Chuyển khoản) */
-    transaction_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (booking_id) REFERENCES bookings(id)
 );
 
 CREATE TABLE IF NOT EXISTS services (
