@@ -184,7 +184,7 @@ public class FieldBookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy lịch đặt."));
 
-        if (!booking.getUserId().equals(user.getId())) {
+        if (booking.getUserId().intValue() != user.getId().intValue()) {
             throw new RuntimeException("Bạn không có quyền hủy lịch đặt này.");
         }
 
