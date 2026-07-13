@@ -8,6 +8,7 @@ public class ServiceDTO {
     private String name;
     private Double price;
     private Integer stockQuantity;
+    private Long fieldId;
 
     public ServiceDTO() {}
 
@@ -48,5 +49,13 @@ public class ServiceDTO {
 
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
+    }
+
+    public Long getFieldId() {
+        return fieldId;
+    }
+
+    public void setFieldId(Long fieldId) {
+        this.fieldId = fieldId;
     }
 }

@@ -33,6 +33,14 @@ public class InventoryService {
     }
 
     /**
+     * Lấy danh sách dịch vụ theo từng sân
+     */
+    public List<Service> getServicesByFieldId(Long fieldId) {
+        if (fieldId == null) return getAllServices();
+        return serviceRepository.findByFieldId(fieldId);
+    }
+
+    /**
      * Lấy thông tin chi tiết của 1 dịch vụ
      */
     public Service getServiceById(Long id) {
@@ -49,6 +57,7 @@ public class InventoryService {
         service.setName(dto.getName());
         service.setPrice(dto.getPrice());
         service.setStockQuantity(dto.getStockQuantity());
+        service.setFieldId(dto.getFieldId());
         return serviceRepository.save(service);
     }
 
@@ -61,6 +70,10 @@ public class InventoryService {
         service.setName(dto.getName());
         service.setPrice(dto.getPrice());
         service.setStockQuantity(dto.getStockQuantity());
+        // fieldId usually doesn't change, but we update if passed
+        if (dto.getFieldId() != null) {
+            service.setFieldId(dto.getFieldId());
+        }
         return serviceRepository.save(service);
     }
 
@@ -71,6 +84,11 @@ public class InventoryService {
     public void deleteService(Long id) {
         Service service = getServiceById(id);
         serviceRepository.delete(service);
+    }
+
+    @Transactional
+    public void cleanUpOrphanedServices() {
+        serviceRepository.deleteByFieldIdIsNull();
     }
 
     /**

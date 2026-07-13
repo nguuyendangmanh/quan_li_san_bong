@@ -49,7 +49,12 @@
             <h1>🥤 Quản lý Kho Dịch Vụ</h1>
             <p>Quản lý nước uống, đồ ăn nhẹ, cho thuê bóng/áo tập...</p>
         </div>
-        <button class="btn btn-primary" onclick="openCreateModal()">＋ Thêm dịch vụ</button>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <select id="fieldSelect" class="form-group" style="padding: 10px; border-radius: 8px; background: var(--bg-card); color: white; border: 1px solid var(--glass-border); outline: none;" onchange="loadAndRenderServices()">
+                <option value="">-- Chọn Sân --</option>
+            </select>
+            <button class="btn btn-primary" onclick="openCreateModal()">＋ Thêm dịch vụ</button>
+        </div>
     </div>
 
     <div class="table-card">
@@ -132,9 +137,46 @@ function checkAuth() {
 }
 checkAuth();
 
-async function loadServices() {
+// Bỏ loadServices cũ vì sẽ dùng inventory.js
+// async function loadServices() { ... }
+// Thay vào đó load field options
+let currentUser = null;
+async function initInventory() {
     try {
-        const res = await fetch(API_URL + '/api/services', {
+        const authRes = await fetch(API_URL + '/api/auth/me', {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        if(authRes.ok) currentUser = await authRes.json();
+        
+        const fieldRes = await fetch(API_URL + '/api/fields');
+        if(fieldRes.ok) {
+            let fields = await fieldRes.json();
+            if(currentUser && currentUser.role === 'STAFF') {
+                fields = fields.filter(f => currentUser.managedFieldIds && currentUser.managedFieldIds.includes(f.id));
+            }
+            const select = document.getElementById('fieldSelect');
+            fields.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.id;
+                opt.textContent = f.name;
+                select.appendChild(opt);
+            });
+            if(fields.length > 0) {
+                select.value = fields[0].id;
+            }
+        }
+    } catch(e) {}
+    loadAndRenderServices();
+}
+
+async function loadAndRenderServices() {
+    const fieldSelect = document.getElementById('fieldSelect');
+    const fieldId = fieldSelect.value;
+    let url = API_URL + '/api/services';
+    if (fieldId) url += '?fieldId=' + fieldId;
+
+    try {
+        const res = await fetch(url, {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
         });
         const data = await res.json();
@@ -186,8 +228,14 @@ async function saveService() {
     const name = document.getElementById('serviceName').value;
     const price = document.getElementById('servicePrice').value;
     const stock = document.getElementById('serviceStock').value;
+    const fieldId = document.getElementById('fieldSelect').value;
+
+    if (!fieldId) {
+        alert('Vui lòng chọn Sân trước khi thêm/sửa dịch vụ!');
+        return;
+    }
     
-    const body = { name, price: Number(price), stockQuantity: Number(stock) };
+    const body = { name, price: Number(price), stockQuantity: Number(stock), fieldId: Number(fieldId) };
     const method = currentEditingId ? 'PUT' : 'POST';
     const url = currentEditingId ? `${API_URL}/api/services/${currentEditingId}` : `${API_URL}/api/services`;
 
@@ -202,9 +250,10 @@ async function saveService() {
         });
         if (res.ok) {
             hideModal('inventoryModal');
-            loadServices();
+            loadAndRenderServices();
         } else {
-            alert('Lỗi lưu dịch vụ');
+            const err = await res.json();
+            alert('Lỗi: ' + (err.error || 'Lỗi lưu dịch vụ'));
         }
     } catch (e) {
         alert('Lỗi mạng');
@@ -214,15 +263,20 @@ async function saveService() {
 async function deleteService(id) {
     if (!confirm('Bạn có chắc muốn xóa?')) return;
     try {
-        await fetch(`${API_URL}/api/services/${id}`, {
+        const res = await fetch(`${API_URL}/api/services/${id}`, {
             method: 'DELETE',
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
         });
-        loadServices();
+        if (res.ok) {
+            loadAndRenderServices();
+        } else {
+            const err = await res.json();
+            alert('Lỗi: ' + (err.error || 'Không thể xóa'));
+        }
     } catch (e) {}
 }
 
-window.onload = loadServices;
+window.onload = initInventory;
 </script>
 </body>
 </html>

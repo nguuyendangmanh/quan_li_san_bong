@@ -316,14 +316,17 @@ async function loadFields() {
     }
 }
 
-// 3. Load danh sách dịch vụ / nước uống
+// 3. Load danh sách dịch vụ / nước uống theo sân
 let availableServices = [];
-async function loadServices() {
+async function loadServices(fieldId) {
     try {
         const headers = {};
         if (isLoggedIn) headers['Authorization'] = 'Bearer ' + localStorage.getItem('jwt_token');
         
-        const res = await fetch(API_URL + '/api/services', { headers });
+        let url = API_URL + '/api/services';
+        if (fieldId) url += '?fieldId=' + fieldId;
+        
+        const res = await fetch(url, { headers });
         if(res.ok) {
             availableServices = await res.json();
             renderServices();
@@ -388,8 +391,8 @@ function openBookingModal(id, name) {
     dateInput.value = todayStr;
     dateInput.min = todayStr;
     
-    // Reset service inputs
-    document.querySelectorAll('.qty-val').forEach(inp => inp.value = 0);
+    // Fetch menu đồ uống cho sân này
+    loadServices(id);
     
     const overlay = document.getElementById('bookingModal');
     overlay.style.display = 'flex';
@@ -511,9 +514,6 @@ async function submitBooking() {
 window.onload = () => {
     checkLoginState();
     loadFields();
-    if(isLoggedIn) {
-        loadServices();
-    }
 };
 </script>
 </body>

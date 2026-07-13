@@ -39,13 +39,28 @@ public class ServiceController {
                 .orElse("CUSTOMER");
     }
 
+    private boolean canManageField(Long fieldId) {
+        String phone = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByPhone(phone).orElse(null);
+        if (user == null) return false;
+        if ("ADMIN".equals(user.getRole())) return true;
+        if ("STAFF".equals(user.getRole())) {
+            if (fieldId == null) return false;
+            return user.getManagedFieldIds() != null && user.getManagedFieldIds().contains(fieldId.intValue());
+        }
+        return false;
+    }
+
     /**
      * API Lấy danh sách toàn bộ dịch vụ/đồ uống
      * Method: GET /api/services
      * Quyền hạn: Tất cả người dùng đã đăng nhập (ADMIN, STAFF, CUSTOMER)
      */
     @GetMapping
-    public ResponseEntity<List<Service>> getAllServices() {
+    public ResponseEntity<List<Service>> getAllServices(@RequestParam(required = false) Long fieldId) {
+        if (fieldId != null) {
+            return ResponseEntity.ok(inventoryService.getServicesByFieldId(fieldId));
+        }
         return ResponseEntity.ok(inventoryService.getAllServices());
     }
 
@@ -56,10 +71,9 @@ public class ServiceController {
      */
     @PostMapping
     public ResponseEntity<?> createService(@RequestBody ServiceDTO dto) {
-        String role = getCurrentUserRole();
-        if (!"ADMIN".equals(role) && !"STAFF".equals(role)) {
+        if (!canManageField(dto.getFieldId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN hoặc STAFF)!\"}");
+                    .body("{\"error\": \"Bạn không có quyền quản lý nước uống ở sân này!\"}");
         }
         try {
             Service created = inventoryService.createService(dto);
@@ -76,10 +90,14 @@ public class ServiceController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateService(@PathVariable Long id, @RequestBody ServiceDTO dto) {
-        String role = getCurrentUserRole();
-        if (!"ADMIN".equals(role) && !"STAFF".equals(role)) {
+        Service existing = inventoryService.getServiceById(id);
+        if (!canManageField(existing.getFieldId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN hoặc STAFF)!\"}");
+                    .body("{\"error\": \"Bạn không có quyền quản lý nước uống ở sân này!\"}");
+        }
+        if (dto.getFieldId() != null && !canManageField(dto.getFieldId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("{\"error\": \"Bạn không có quyền chuyển nước uống sang sân này!\"}");
         }
         try {
             Service updated = inventoryService.updateService(id, dto);
@@ -96,10 +114,10 @@ public class ServiceController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteService(@PathVariable Long id) {
-        String role = getCurrentUserRole();
-        if (!"ADMIN".equals(role) && !"STAFF".equals(role)) {
+        Service existing = inventoryService.getServiceById(id);
+        if (!canManageField(existing.getFieldId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"error\": \"Bạn không có quyền thực hiện hành động này (Yêu cầu ADMIN hoặc STAFF)!\"}");
+                    .body("{\"error\": \"Bạn không có quyền xóa nước uống ở sân này!\"}");
         }
         try {
             inventoryService.deleteService(id);
@@ -107,6 +125,15 @@ public class ServiceController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
+    }
+
+    @DeleteMapping("/cleanup")
+    public ResponseEntity<?> cleanupOrphaned() {
+        if (!"ADMIN".equals(getCurrentUserRole())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        inventoryService.cleanUpOrphanedServices();
+        return ResponseEntity.ok("{\"message\": \"Dọn dẹp thành công!\"}");
     }
 
     /**

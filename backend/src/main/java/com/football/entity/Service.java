@@ -23,6 +23,9 @@ public class Service {
     @Column(name = "stock_quantity")
     private Integer stockQuantity = 0;
 
+    @Column(name = "field_id")
+    private Long fieldId;
+
     // Constructor mặc định bắt buộc cho JPA
     public Service() {}
 
@@ -65,5 +68,13 @@ public class Service {
 
     public void setStockQuantity(Integer stockQuantity) {
         this.stockQuantity = stockQuantity;
+    }
+
+    public Long getFieldId() {
+        return fieldId;
+    }
+
+    public void setFieldId(Long fieldId) {
+        this.fieldId = fieldId;
     }
 }

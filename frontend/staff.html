@@ -161,7 +161,7 @@ async function loadBookings() {
                     actions += `<button class="btn btn-danger btn-sm" onclick="updateStatus(${b.id}, 'CANCELLED')">Hủy (Không đến)</button>`;
                 }
             } else if (b.status === 'CHECKED_IN') {
-                actions += `<button class="btn btn-price btn-sm" onclick="openOrderModal(${b.id})">🥤 Gọi nước</button>`;
+                actions += `<button class="btn btn-price btn-sm" onclick="openOrderModal(${b.id}, ${b.fieldId})">🥤 Gọi nước</button>`;
                 actions += `<button class="btn btn-calc btn-sm" onclick="updateStatus(${b.id}, 'COMPLETED')">Thanh toán</button>`;
             }
             
@@ -208,9 +208,11 @@ async function updateStatus(id, newStatus) {
     }
 }
 
-async function loadServicesToSelect() {
+async function loadServicesToSelect(fieldId) {
     try {
-        const res = await fetch(API_URL + '/api/services', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') } });
+        let url = API_URL + '/api/services';
+        if (fieldId) url += '?fieldId=' + fieldId;
+        const res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') } });
         const data = await res.json();
         const sel = document.getElementById('serviceSelect');
         sel.innerHTML = data.filter(s => s.stockQuantity > 0).map(s => 
@@ -219,10 +221,13 @@ async function loadServicesToSelect() {
     } catch (e) {}
 }
 
-function openOrderModal(bookingId) {
+let currentOrderFieldId = null;
+function openOrderModal(bookingId, fieldId) {
     document.getElementById('orderBookingId').value = bookingId;
     document.getElementById('serviceQuantity').value = 1;
     document.getElementById('orderModal').style.display = 'flex';
+    currentOrderFieldId = fieldId;
+    loadServicesToSelect(fieldId);
 }
 
 function hideModal(id) { document.getElementById(id).style.display = 'none'; }
@@ -246,7 +251,7 @@ async function submitOrder() {
             alert('Đã gọi đồ uống thành công!');
             hideModal('orderModal');
             loadBookings();
-            loadServicesToSelect(); // refresh stock
+            if (currentOrderFieldId) loadServicesToSelect(currentOrderFieldId); // refresh stock
         } else {
             const data = await res.json();
             alert('Lỗi: ' + data.error);
@@ -258,7 +263,6 @@ async function submitOrder() {
 
 window.onload = () => {
     loadBookings();
-    loadServicesToSelect();
 };
 </script>
 </body>
