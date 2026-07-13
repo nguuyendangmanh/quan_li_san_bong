@@ -58,9 +58,28 @@ public class ServiceController {
      */
     @GetMapping
     public ResponseEntity<List<Service>> getAllServices(@RequestParam(required = false) Long fieldId) {
+        String phone = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByPhone(phone).orElse(null);
+        boolean isStaff = user != null && "STAFF".equals(user.getRole());
+
         if (fieldId != null) {
+            if (isStaff && (user.getManagedFieldIds() == null || !user.getManagedFieldIds().contains(fieldId.intValue()))) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
             return ResponseEntity.ok(inventoryService.getServicesByFieldId(fieldId));
         }
+
+        if (isStaff) {
+            if (user.getManagedFieldIds() == null || user.getManagedFieldIds().isEmpty()) {
+                return ResponseEntity.ok(java.util.Collections.emptyList());
+            }
+            List<Service> allowedServices = new java.util.ArrayList<>();
+            for (Integer mId : user.getManagedFieldIds()) {
+                allowedServices.addAll(inventoryService.getServicesByFieldId(mId.longValue()));
+            }
+            return ResponseEntity.ok(allowedServices);
+        }
+
         return ResponseEntity.ok(inventoryService.getAllServices());
     }
 

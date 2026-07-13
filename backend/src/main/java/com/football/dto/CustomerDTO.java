@@ -8,6 +8,7 @@ public class CustomerDTO {
     private String role;
     private Integer loyaltyPoints;
     private String vipTier; // DONG, BAC, VANG, KIMCUONG
+    private java.util.List<Integer> managedFieldIds;
 
     public CustomerDTO() {}
 
@@ -47,4 +48,7 @@ public class CustomerDTO {
 
     public String getVipTier() { return vipTier; }
     public void setVipTier(String vipTier) { this.vipTier = vipTier; }
+
+    public java.util.List<Integer> getManagedFieldIds() { return managedFieldIds; }
+    public void setManagedFieldIds(java.util.List<Integer> managedFieldIds) { this.managedFieldIds = managedFieldIds; }
 }

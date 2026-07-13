@@ -89,6 +89,7 @@ public class AuthService {
                 user.getId().intValue(), user.getPhone(), user.getFullName(), user.getRole(), user.getLoyaltyPoints()
         );
         dto.setVipTier(customerService.getVipTierName(user.getLoyaltyPoints()));
+        dto.setManagedFieldIds(user.getManagedFieldIds());
         return dto;
     }
 }
