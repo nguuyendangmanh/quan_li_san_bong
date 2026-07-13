@@ -31,4 +31,14 @@ public class UserController {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
+
+    @DeleteMapping("/staff/{id}")
+    public ResponseEntity<?> deleteStaff(@PathVariable Integer id) {
+        try {
+            userService.deleteStaff(id);
+            return ResponseEntity.ok("{\"message\": \"Xóa nhân viên thành công\"}");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
+        }
+    }
 }

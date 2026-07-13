@@ -37,4 +37,12 @@ public class UserService {
 
         return userRepository.save(staff);
     }
+
+    public void deleteStaff(Integer id) {
+        User staff = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+        if (!"STAFF".equals(staff.getRole())) {
+            throw new RuntimeException("Không thể xóa user này (chỉ xóa STAFF)");
+        }
+        userRepository.delete(staff);
+    }
 }

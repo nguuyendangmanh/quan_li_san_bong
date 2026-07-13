@@ -29,6 +29,9 @@ async function loadStaffList() {
                 <td>${s.phone}</td>
                 <td>${s.email || '-'}</td>
                 <td><span class="badge">NHÂN VIÊN</span></td>
+                <td>
+                    <button class="btn btn-danger btn-sm" onclick="deleteStaff(${s.id})" style="padding: 4px 8px; font-size: 12px; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">Xóa</button>
+                </td>
             </tr>
         `).join('');
 
@@ -101,6 +104,24 @@ async function createStaff() {
     } catch (error) {
         console.error("Lỗi tạo nhân viên:", error);
         alert("Có lỗi xảy ra, vui lòng thử lại!");
+    }
+}
+
+async function deleteStaff(id) {
+    if (!confirm('Bạn có chắc chắn muốn xóa nhân viên này không?')) return;
+    try {
+        const response = await fetchAPI(`/users/staff/${id}`, {
+            method: 'DELETE'
+        });
+        if (response && response.error) {
+            alert("Lỗi: " + response.error);
+        } else {
+            alert("Đã xóa nhân viên thành công!");
+            loadStaffList();
+        }
+    } catch (error) {
+        console.error("Lỗi xóa nhân viên:", error);
+        alert("Lỗi mạng!");
     }
 }
 
