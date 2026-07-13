@@ -26,6 +26,9 @@ public class Service {
     @Column(name = "field_id")
     private Long fieldId;
 
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
+
     // Constructor mặc định bắt buộc cho JPA
     public Service() {}
 
@@ -76,5 +79,13 @@ public class Service {
 
     public void setFieldId(Long fieldId) {
         this.fieldId = fieldId;
+    }
+
+    public Boolean getIsDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 }

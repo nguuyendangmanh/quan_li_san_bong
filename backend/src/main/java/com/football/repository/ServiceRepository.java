@@ -22,7 +22,9 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
     @Query("UPDATE Service s SET s.stockQuantity = s.stockQuantity - :qty WHERE s.id = :id AND s.stockQuantity >= :qty")
     int decrementStock(@Param("id") Long id, @Param("qty") Integer qty);
 
-    java.util.List<Service> findByFieldId(Long fieldId);
+    java.util.List<Service> findByFieldIdAndIsDeletedFalse(Long fieldId);
+    
+    java.util.List<Service> findByIsDeletedFalse();
 
     @Modifying
     void deleteByFieldIdIsNull();

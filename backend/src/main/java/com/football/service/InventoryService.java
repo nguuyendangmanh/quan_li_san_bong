@@ -29,7 +29,7 @@ public class InventoryService {
      * Lấy toàn bộ danh sách dịch vụ đang kinh doanh
      */
     public List<Service> getAllServices() {
-        return serviceRepository.findAll();
+        return serviceRepository.findByIsDeletedFalse();
     }
 
     /**
@@ -37,7 +37,7 @@ public class InventoryService {
      */
     public List<Service> getServicesByFieldId(Long fieldId) {
         if (fieldId == null) return getAllServices();
-        return serviceRepository.findByFieldId(fieldId);
+        return serviceRepository.findByFieldIdAndIsDeletedFalse(fieldId);
     }
 
     /**
@@ -83,8 +83,14 @@ public class InventoryService {
     @Transactional
     public void deleteService(Long id) {
         Service service = getServiceById(id);
-        serviceRepository.delete(service);
-        serviceRepository.flush();
+        try {
+            serviceRepository.delete(service);
+            serviceRepository.flush();
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            // Soft delete
+            service.setIsDeleted(true);
+            serviceRepository.save(service);
+        }
     }
 
     @Transactional
