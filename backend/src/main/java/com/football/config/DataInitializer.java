@@ -19,7 +19,14 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Kiểm tra xem Admin đã tồn tại chưa
-        if (!userRepository.existsByPhone("0988888888")) {
+        java.util.Optional<User> adminOpt = userRepository.findByPhone("0988888888");
+        if (adminOpt.isPresent()) {
+            User admin = adminOpt.get();
+            admin.setRole("ADMIN");
+            admin.setPassword(passwordEncoder.encode("123456"));
+            userRepository.save(admin);
+            System.out.println("Đã cập nhật tài khoản 0988888888 thành ADMIN / 123456");
+        } else {
             User admin = new User();
             admin.setPhone("0988888888");
             admin.setPassword(passwordEncoder.encode("123456"));
