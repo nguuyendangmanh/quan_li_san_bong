@@ -1,0 +1,114 @@
+ĐẠI HỌC PHENIKAA
+TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
+KỸ THUẬT PHẦN MỀM 
+(CSE702025)
+ĐỀ TÀI: <Tên đề tài>
+Năm học: 2025-2026
+MỤC LỤC
+DANH MỤC BẢNG BIỂU
+DANH MỤC HÌNH VẼ
+DANH MỤC TỪ VIẾT TẮT (nếu có)
+MỞ ĐẦU
+Giới thiệu
+Mô tả bài toán
+Mục đích hệ thống
+Phạm vi hệ thống
+Đối tượng sử dụng
+Từ điển thuật ngữ
+Phân tích và thiết kế hệ thống
+Phân tích yêu cầu chức năng
+Quy trình nghiệp vụ
+Các chức năng của hệ thống
+Biểu đồ use case
+Đặc tả các use case
+Yêu cầu phi chức năng
+Yêu cầu về giao diện người dùng
+Yêu cầu về tính bảo mật
+Các ràng buộc
+Các yêu cầu phi chức năng khác (nếu có)
+Kiến trúc tổng thể hệ thống
+Biểu đồ lớp
+Thiết kế cơ sở dữ liệu
+Kết quả thực hiện
+Công nghệ sử dụng
+Các giao diện chính 
+Chụp màn hình các giao diện chính
+Kiểm thử phần mềm
+Chỉ yêu cầu mô tả test 5-7 chức năng
+Kết luận
+Phân công nhiệm vụ 
+Bảng phân công nhiệm vụ của các thành viên
+CHƯƠNG 1: THIẾT KẾ FILE UI MẪU (COMPONENTS.HTML)
+1.1. Mục đích thiết kế
+Tập tin components.html tuyệt đối không phải là một trang web có thể truy cập bởi người dùng cuối (End-user). Trái lại, nó đóng vai trò là một "Từ điển Giao diện" (UI Dictionary), một "Tài liệu Đặc tả Thiết kế" (Design Specification) hay một "Thư viện Thành phần" (Component Library) nội bộ lưu hành độc quyền dành riêng cho đội ngũ phát triển phần mềm.
+Mục tiêu cốt lõi của file HTML này là để tập hợp, định nghĩa và hiển thị một cách trực quan tất cả các thành phần thiết kế nguyên tử (Atomic Elements) như các loại nút bấm, bảng biểu, hộp thoại thông báo, ô nhập liệu... tại một không gian duy nhất trước khi chúng được đưa vào sử dụng tràn lan ở hàng chục màn hình chức năng khác nhau của phần mềm Quản lý Sân bóng.
+Tệp tin mẫu này đóng vai trò như một bản hợp đồng thiết kế bất di bất dịch (Design Contract) giữa nhà thiết kế giao diện (UI/UX Designer) và các lập trình viên (Developers). Bất cứ khi nào lập trình viên cần khởi tạo một giao diện chức năng mới, thay vì phải cặm cụi ngồi viết lại các đoạn mã CSS căn lề từ đầu, họ chỉ cần mở file components.html lên, sao chép (Copy) đúng tên class CSS và dán (Paste) vào trang mới của mình.
+Lợi ích khổng lồ nhất mà components.html mang lại chính là việc đảm bảo tính nhất quán tuyệt đối về mặt thị giác (Visual Consistency). Nhờ có thư viện dùng chung này làm kim chỉ nam, hàng chục trang web chức năng khác nhau trong hệ thống đều sẽ tuân thủ chung một quy chuẩn về kích thước font chữ, chung một độ bo góc viền tinh tế, chung một sắc độ của mã màu xanh chủ đạo. Đồng thời, nó biến quá trình bảo trì phần mềm (Maintenance) trở nên vô cùng nhẹ nhàng; giả sử có yêu cầu đổi toàn bộ màu nút bấm từ Xanh sang Cam, lập trình viên chỉ cần sửa chữa một biến số duy nhất trong file mẫu, lập tức toàn bộ hệ thống sẽ tự động cập nhật.
+1.2. Cấu trúc giao diện
+Phần đầu của tệp tin mẫu (Header) chứa các thẻ Meta quan trọng nhất để định dạng ngôn ngữ UTF-8, đảm bảo phần mềm hiển thị chính xác bảng mã tiếng Việt có dấu mà không bị lỗi font (Mojibake). Đồng thời nó chứa các đường dẫn liên kết (Link tags) tới hệ thống thư viện Google Fonts (sử dụng phông chữ Inter hoặc Roboto) để tải phông chữ chuẩn mực quốc tế.
+Mảng Header cũng là nơi chứa đoạn khai báo khối CSS khổng lồ, bao gồm các biến số :root variables để chứa các tham số thiết kế tĩnh. Việc thiết kế đóng gói toàn bộ CSS vào bên trong Header giúp file có thể chạy độc lập dưới dạng Standalone mà không bị đứt gãy kết nối với các tệp CSS bên ngoài.
+Mỗi hạng mục thành phần trong trang web mẫu được phân tách rõ ràng bằng một Tiêu đề có kích thước lớn (Sử dụng Thẻ H1, H2). Các tiêu đề này được bọc trong các lớp thiết kế có đường gạch dưới thanh mảnh và in đậm (Bold weight) nhằm tạo ra sự phân cấp cấu trúc thông tin (Visual Hierarchy). Việc phân chia rõ ràng và mạch lạc này giúp các lập trình viên có thể dễ dàng định vị và tra cứu (Scannability) các thành phần giao diện một cách nhanh chóng giống như việc họ đang tra cứu một cuốn từ điển bách khoa toàn thư vậy.
+Bên dưới mỗi dòng tiêu đề là khu vực hiển thị thực tế của các Component. Tại đây, các thành phần giao diện được kết xuất và hiển thị (Render) nguyên bản theo đúng hình dáng, kích thước và màu sắc. Chúng được ưu tiên đặt bên trong các khối không gian có chứa padding rộng rãi, nền sáng sủa nhằm làm nổi bật lên đường viền (Border) và màu sắc của khối. Không gian hiển thị cô lập này giúp các nhà kiểm thử phần mềm (QA/Tester) có thể trực tiếp dùng chuột để tương tác thử các hiệu ứng Hover, Click trước khi nghiệm thu.
+1.3. Thiết kế Button (Nút bấm)
+Hệ thống nút bấm (Buttons) là trung tâm của mọi tương tác hành vi. Chúng là cánh cửa duy nhất để người dùng truyền đạt mệnh lệnh của mình tới hệ thống máy chủ. Do đó, nút bấm được thiết kế vô cùng tỉ mỉ.
+Button Save: Được đại diện bởi class btn-primary. Đây là nút bấm mang tính chất "Kêu gọi Hành động" (Call to Action - CTA) chính yếu nhất trên mọi biểu mẫu. Nó được chỉ định sử dụng độc quyền cho các tác vụ mang lại giá trị tích cực như: Lưu thông tin sân bóng, Thêm mới khách hàng, Xác nhận đặt sân. Do mang sứ mệnh quan trọng nhất, nút này sử dụng màu Xanh ngọc (Mã HEX #27ae60) mang lại cảm giác an toàn, sự thành công và hoàn tất trọn vẹn.
+Button Delete: Được đại diện bởi class btn-danger. Đây là nút bấm chứa đựng nhiều rủi ro, được dùng chuyên biệt cho các hành động mang tính chất phá hủy (Destructive Actions) và thường không thể vãn hồi dữ liệu nếu lỡ tay bấm nhầm như: Xóa vĩnh viễn hóa đơn, Hủy đặt sân. Nút này bắt buộc phải sử dụng màu Đỏ rực rỡ (Mã HEX #e74c3c), là màu sắc đặc trưng của sự nguy hiểm, máu và sự cảnh báo mức độ cao.
+Về mặt kích thước, các nút bấm được thiết kế với padding rộng rãi (thường là padding: 12px 24px) nhằm đảm bảo diện tích chạm (Hitbox / Touch target) đủ lớn trên mọi thiết bị. Thiết kế này tuân thủ tuyệt đối theo định luật Fitts's Law lừng danh trong lĩnh vực thiết kế UX, giúp triệt tiêu hoàn toàn hiện tượng bấm trượt, bấm nhầm nút (Fat-finger syndrome) đối với những quản lý sân sử dụng điện thoại di động.
+1.4. Thiết kế Table (Bảng dữ liệu)
+Bảng dữ liệu (Data Table) là thành phần UI phức tạp nhất, nặng nề nhất nhưng cũng quan trọng nhất trong hệ thống phần mềm quản lý, làm nhiệm vụ hiển thị hàng loạt các dữ liệu danh sách như: Danh sách hóa đơn lịch sử, Lịch trình đặt sân.
+Cấu trúc bảng được thiết lập thuộc tính border-collapse: collapse và width: 100% để trải dài vừa vặn lấp đầy với kích thước của mọi màn hình, mang lại một diện mạo phẳng (Flat Design), tạo ra không gian thoáng đãng. Thiết kế đã táo bạo lược bỏ hoàn toàn các đường kẻ dọc (Vertical borders) gây rối mắt, chỉ giữ lại các đường kẻ ngang thanh mảnh.
+Khu vực thân bảng (Tbody) là nơi chứa các dòng dữ liệu xen kẽ nhau. Một kỹ thuật UX cao cấp được áp dụng là hiệu ứng tương tác Hover: Khi nhân viên dùng chuột rê qua bất kỳ một dòng nào, dòng dữ liệu đó sẽ tự động đổi màu nền sang một dải màu xám nhạt (Light gray highlight). Hiệu ứng dóng hàng động này hoạt động như một thanh thước kẻ vô hình, giúp mắt người dùng bám chặt vào một hàng dài chứa nhiều cột thông tin mà không bị nhìn nhầm sang dòng tiền của người khác.
+CHƯƠNG 2: THIẾT KẾ CẤU TRÚC DỮ LIỆU VÀ BIỂU ĐỒ LỚP TỔNG THỂ
+                        Hình 1:Biểu đồ lớp tổng thể(Class Diagram).
+2.1. Mục đích của Biểu đồ lớp
+Mục đích tối thượng của Biểu đồ lớp (Class Diagram) là cung cấp một bản thiết kế bộ xương cấu trúc tĩnh (Static Structure Blueprint) của toàn bộ hệ thống phần mềm Quản lý Sân bóng. Nó định nghĩa cụ thể các khuôn mẫu Đối tượng (Object Templates) sẽ được khởi tạo trong bộ nhớ của ngôn ngữ lập trình hướng đối tượng (OOP).
+Thông qua cơ chế Ánh xạ Đối tượng Quan hệ (ORM như Hibernate hay Entity Framework), biểu đồ lớp này đóng vai trò như một bản thiết kế kiến trúc phản chiếu trực tiếp cấu trúc của các Bảng vật lý (Physical Tables) sẽ được tạo ra dưới Hệ quản trị Cơ sở dữ liệu (Database). Nó giúp loại bỏ dư thừa dữ liệu và đảm bảo chuẩn hóa cơ sở dữ liệu ở dạng chuẩn 3 (3NF).
+2.2. Đặc tả chi tiết các Lớp Thực thể
+Lớp User (Người dùng): Là thực thể trung tâm quản lý toàn bộ định danh của con người. Chứa các thuộc tính cá nhân vô cùng quan trọng như fullName (Họ và tên), phone (Số điện thoại), và email. Đặc biệt, thuộc tính password lưu trữ mật khẩu bắt buộc phải được băm (Hashing) bảo mật bằng BCrypt để chống rò rỉ và tấn công Brute-force. Thuộc tính role giúp hệ thống phân quyền linh hoạt mà không cần phải tạo ra nhiều bảng rời rạc.
+Lớp Booking (Đơn đặt sân): Là lớp mang tính chất Giao dịch (Transactional Entity) quan trọng nhất hệ thống, đóng vai trò ghi nhận mọi lịch sử thuê mướn sân bóng và doanh thu. Các thuộc tính cốt lõi của nó mang ý nghĩa thời gian bao gồm startTime và endTime. Thuộc tính totalPrice mang kiểu dữ liệu số học độ chính xác cực cao (BigDecimal) lưu trữ tổng số tiền hóa đơn mà khách hàng phải thanh toán, tuyệt đối không được phép có sai số làm tròn.
+Lớp Field (Sân bóng): Là bản sao ảo hóa mô tả các thông tin vật lý tĩnh của cơ sở vật chất sân bóng. Chứa các thuộc tính như name, type (Sân 5, Sân 7). Đặc biệt, thuộc tính status đóng vai trò như cầu dao vật lý: Nếu trạng thái này được chuyển sang "Bảo trì", mọi lịch đặt sân tương lai vào sân bóng này sẽ bị hệ thống tự động khóa lại để đảm bảo an toàn kinh doanh.
+Lớp Service (Dịch vụ phụ trợ): Ra đời để quản lý các danh mục hàng hóa (nước uống, áo, bóng) một cách tách biệt. Việc tách riêng lớp này thay vì gộp chung vào văn bản của lớp Booking giúp hệ thống có thể dễ dàng quản lý số lượng tồn kho (Inventory) và cấu hình giá bán độc lập.
+Lớp PriceConfig (Cấu hình giá động): Giải quyết bài toán "Giá động linh hoạt" (Dynamic Pricing). Kinh doanh sân bóng có những "Giờ vàng" đông khách. Lớp PriceConfig đóng vai trò như một động cơ cấu hình giá thông minh, chứa startTime, endTime và priceMultiplier (Hệ số nhân giá). Thuật toán tính tiền sẽ đọc bảng này để nhân hệ số, tối đa hóa lợi nhuận mà không cần sửa code.
+2.3. Phân tích Quan hệ giữa các lớp
+Quan hệ kết hợp (Association): Là mối quan hệ giao tiếp cơ bản giữa các thực thể tồn tại độc lập với nhau. Trong hệ thống này, lớp User có mối quan hệ Association với lớp Booking. Nếu khách hàng xóa tài khoản, các lịch sử hóa đơn đặt sân vẫn phải được giữ lại an toàn trong hệ thống kế toán để lưu trữ doanh thu, kiểm toán dòng tiền.
+Quan hệ cấu thành (Composition): Là một mối quan hệ phụ thuộc sinh tử (Death relationship) rất chặt chẽ, một đối tượng không thể tồn tại nếu thiếu đối tượng kia. Lớp Field có mối quan hệ Composition với lớp cấu hình giá PriceConfig. Một cấu hình giá "Giờ vàng" chỉ được tạo ra với mục đích duy nhất là gán cho một sân bóng cụ thể. Nếu sân bóng đó bị xóa bỏ khỏi hệ thống, toàn bộ cấu hình giá của nó cũng sẽ tự động bị tiêu hủy (Cascade Delete).
+Bản số quan hệ (Multiplicity): Quan hệ giữa User và Booking là Quan hệ 1-Nhiều (1..*). Một khách hàng có thể tạo ra vô số đơn đặt sân, nhưng một đơn đặt sân bắt buộc phải thuộc về đúng 1 người đặt duy nhất nhằm truy thu trách nhiệm tài chính.
+CHƯƠNG 3: SƠ ĐỒ TUẦN TỰ (SEQUENCE DIAGRAM) LƯỒNG ĐẶT SÂN
+                                Hình 2: Sơ đồ tuần tự(Sequence Diagram).
+3.1. Ý nghĩa và Mục đích
+Nếu biểu đồ lớp mô tả bộ xương bất động của phần mềm, thì Biểu đồ tuần tự là một kịch bản phim sống động (Dynamic View) mô hình hóa dòng chảy dữ liệu (Data Flow) và trình tự tương tác qua lại giữa các đối tượng theo đúng tiến trình trục thời gian. Mục đích tối cao của biểu đồ này là nhằm giải bài toán kiến trúc hóc búa: "Làm thế nào để hệ thống thực thi thành công tính năng Đặt sân an toàn nhất mà không bị trùng lịch?".
+3.2. Các Đối tượng tham gia (Lifelines)
+Hệ thống được chia cắt chuyên biệt đi qua 5 lớp cấu trúc (N-Tier Architecture), mỗi lớp tuân thủ Nguyên tắc Đơn trách nhiệm (Single Responsibility):
+- Giao diện Web (UI/Client): Đóng vai trò thu gom dữ liệu khách hàng nhập, đóng gói thành định dạng chuẩn JSON và vận chuyển nó qua mạng Internet.
+- API Controller: Người gác cổng an ninh (Gatekeeper), chỉ làm nhiệm vụ tiếp nhận yêu cầu, kiểm tra cú pháp định dạng (Validation) và điều hướng luồng dữ liệu.
+- Business Service: Khối óc tính toán cốt lõi. Nơi chứa toàn bộ trí tuệ nhân tạo của phần mềm: Thuật toán chống trùng lịch, tính toán giá động (Dynamic Price), và xử lý ngoại lệ.
+- Repository (Data Access): Người phiên dịch, dịch lệnh hướng đối tượng thành SQL thuần túy.
+- Database: Nơi lưu trữ thực thể vật lý dưới đĩa cứng từ tính, xử lý khóa hàng (Row-locking) chống tranh chấp dữ liệu.
+3.3. Phân tích chi tiết Luồng đặt sân (Happy Path)
+Bước 1: Gửi yêu cầu đặt sân. Trình duyệt Web kích hoạt sự kiện onClick, thu gom thông tin trên màn hình (ID sân, Thời gian Bắt đầu, Thời gian Kết thúc), đóng gói thành khối JSON và bắn HTTP POST lên máy chủ Backend.
+Bước 2: Kiểm tra dữ liệu (Validation). API Controller tiến hành rà soát an ninh nghiêm ngặt. Nó kiểm tra định dạng ngày tháng có đúng chuẩn ISO 8601 không, và logic toán học: Thời gian kết thúc bắt buộc diễn ra sau thời gian bắt đầu. Nếu vi phạm, nó trả về lỗi HTTP 400 Bad Request.
+Bước 3: Kiểm tra trạng thái vật lý sân. Business Service nhận lệnh, kéo thông tin Sân bóng lên RAM để kiểm tra cột status. Nếu sân đang "Bảo trì", luồng sẽ bị bẻ gãy ngay lập tức.
+Bước 4: Kiểm tra trùng lịch (Overlap Detection Algorithm). Service ra lệnh gửi câu lệnh đếm COUNT() xuống tận lõi Database. Thuật toán đếm các đơn hàng tồn tại thỏa mãn: (Thời điểm bắt đầu của khách mới < Thời điểm kết thúc của khách cũ) VÀ (Thời điểm kết thúc của khách mới > Thời điểm bắt đầu của khách cũ). Nếu CSDL trả lời số lượng đếm bằng 0, khung giờ đó hoàn toàn trống rỗng.
+Bước 5: Tính toán giá (Business Math). Service bắt đầu cắt nhỏ khung giờ khách đặt ra làm nhiều khúc, đối chiếu xem đoạn nào dính vào "Giờ Vàng" trong bảng PriceConfig để nhân hệ số (Ví dụ x1.5 giá tiền). Cuối cùng cộng dồn thành Tổng tiền thanh toán (TotalPrice).
+Bước 6: Ghi đĩa và Giao dịch Nguyên tử (ACID Transaction). Hệ thống bọc toàn bộ quá trình bằng một Giao dịch cơ sở dữ liệu. Lệnh INSERT được thực thi để ghi vào đĩa cứng. Nếu cúp điện giữa chừng, tính năng Roll-back sẽ tự động xóa sạch các dữ liệu đang ghi dở, bảo vệ tính Nhất quán vĩnh cửu của dữ liệu.
+Bước 7: Trả kết quả thành công. Controller bọc dữ liệu ID hóa đơn vào trong phản hồi HTTP 201 (Created). Giao diện Web nhận tín hiệu, tự động chuyển hướng khách hàng sang trang Quét mã QR thanh toán VNPAY.
+3.4. Xử lý Tranh chấp Dữ liệu và Các Ngoại lệ (Race Condition)
+Lỗi kinh điển và khốc liệt nhất xảy ra khi hai khách hàng ở hai nơi cùng tranh nhau đặt 1 sân. Luồng của khách A đến sớm 1 mili-giây nên kịp đếm bằng 0 và đang tiến hành lưu. Luồng của khách B đến sau, bị kẹt bởi cơ chế khóa Bi quan (Pessimistic Locking mức Database).
+Khi Khách A lưu xong nhả khóa ra, Khách B được thả ra và Database đếm lại. Lúc này CSDL trả về kết quả COUNT = 1. Lập tức Service của Khách B ném ra ngoại lệ BookingConflictException, trả về mã lỗi HTTP 409 Conflict. Khách hàng B sẽ nhận được thông báo: "Xin lỗi, khung giờ này vừa bị người khác nhanh tay đặt mất!". Cơ chế này tuyệt đối bảo vệ hệ thống khỏi việc trùng lịch.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Bên cạnh đó, việc áp dụng chuẩn hóa 3NF và thuật toán khóa Pessimistic Locking không chỉ đảm bảo tính toàn vẹn dữ liệu trong môi trường cạnh tranh cao mà còn giúp hệ thống dễ dàng đáp ứng được khối lượng giao dịch cực lớn trong tương lai, khi quy mô sân bóng mở rộng lên hàng trăm cơ sở. Sự chia tách các thành phần giao diện (UI) thông qua mô hình Atomic Design, kết hợp với các hiệu ứng vi tương tác (Micro-interactions) tinh tế như Hover State, Focus Ring, đã mang lại trải nghiệm người dùng tối ưu nhất. Mọi luồng dữ liệu đều được kiểm soát chặt chẽ thông qua các Exception Handlers ở tầng Controller, giúp máy chủ luôn đứng vững trước các cuộc tấn công DDoS dữ liệu rác, khẳng định một kiến trúc phần mềm trưởng thành, vững chắc và chuyên nghiệp.
+Lớp: | <Điền tên lớp học phần>
+Nhóm: | <Thứ tự nhóm>
+Thành viên: | Họ và tên – MSV
+….
+….
+….
+Giảng viên: | TS. Trương Đức Phương

@@ -1,0 +1,367 @@
+ĐẠI HỌC PHENIKAA
+TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
+KỸ THUẬT PHẦN MỀM 
+(CSE702025)
+ĐỀ TÀI: <Tên đề tài>
+Năm học: 2025-2026
+MỤC LỤC
+DANH MỤC BẢNG BIỂU
+DANH MỤC HÌNH VẼ
+DANH MỤC TỪ VIẾT TẮT (nếu có)
+MỞ ĐẦU
+Giới thiệu
+Mô tả bài toán
+Mục đích hệ thống
+Phạm vi hệ thống
+Đối tượng sử dụng
+Từ điển thuật ngữ
+Phân tích và thiết kế hệ thống
+Phân tích yêu cầu chức năng
+Quy trình nghiệp vụ
+Các chức năng của hệ thống
+Các tác nhân (Actor) trong hệ thống:
+Danh sách các Use Case:
+Biểu đồ use case
+Hình: Sơ đồ Use Case tổng quan
+Sơ đồ trên mô tả tổng quan các chức năng chính của hệ thống và mối quan hệ giữa các tác nhân. Khách hàng bắt buộc phải đăng nhập trước khi thực hiện đặt sân, thanh toán, xem lịch sử (quan hệ <<include>>). Cấu hình giá giờ vàng là chức năng mở rộng của Quản lý sân (quan hệ <<extend>>).
+Đặc tả các use case
+5.1. UC01 – Đăng ký tài khoản
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.2. UC02 – Đăng nhập hệ thống
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.3. UC03 – Xem danh sách sân bóng
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.4. UC04 – Đặt sân bóng
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.5. UC05 – Thanh toán tiền cọc
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.6. UC06 – Hủy đặt sân
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.7. UC07 – Xem lịch sử đặt sân
+Luồng sự kiện chính (Basic Flow):
+5.8. UC08 – Quản lý sân bóng
+Luồng sự kiện chính – Thêm sân mới:
+Luồng sự kiện chính – Cập nhật sân:
+Luồng sự kiện chính – Xóa sân:
+Luồng sự kiện thay thế (Alternative Flow):
+5.9. UC09 – Cấu hình giá giờ vàng
+Luồng sự kiện chính (Basic Flow):
+5.10. UC10 – Quản lý dịch vụ và kho hàng
+Luồng sự kiện chính – Thêm dịch vụ mới:
+Luồng sự kiện chính – Cập nhật/Bổ sung kho:
+Luồng sự kiện thay thế (Alternative Flow):
+5.11. UC11 – Bán dịch vụ tại quầy
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.12. UC12 – Duyệt và cập nhật trạng thái đặt sân
+Luồng trạng thái đơn đặt sân: Chờ xác nhận → Đã xác nhận → Đã check-in → Hoàn thành
+Luồng sự kiện chính (Basic Flow):
+Luồng sự kiện thay thế (Alternative Flow):
+5.13. UC13 – Xem báo cáo thống kê doanh thu
+Luồng sự kiện chính (Basic Flow):
+5.14. UC14 – Xem thông tin khách hàng thân thiết
+Luồng sự kiện chính (Basic Flow):
+Bảng phân hạng khách hàng thân thiết:
+Quy tắc tích điểm: Mỗi 100.000 VNĐ thanh toán thành công tương đương 1 điểm tích lũy. Điểm được cộng tự động khi đơn đặt sân chuyển sang trạng thái Hoàn thành.
+6. Ma trận phân quyền Actor – Use Case
+Bảng dưới đây tổng hợp quyền truy cập của từng tác nhân đối với các Use Case trong hệ thống. Dấu ✓ thể hiện tác nhân có quyền thực hiện Use Case tương ứng.
+Yêu cầu phi chức năng
+Yêu cầu về giao diện người dùng
+Yêu cầu về tính bảo mật
+Các ràng buộc
+Các yêu cầu phi chức năng khác (nếu có)
+Kiến trúc tổng thể hệ thống
+Biểu đồ lớp
+Thiết kế cơ sở dữ liệu
+Kết quả thực hiện
+Công nghệ sử dụng
+Các giao diện chính 
+Chụp màn hình các giao diện chính
+Kiểm thử phần mềm
+Chỉ yêu cầu mô tả test 5-7 chức năng
+Kết luận
+Phân công nhiệm vụ 
+Bảng phân công nhiệm vụ của các thành viên
+Lớp: | <Điền tên lớp học phần>
+Nhóm: | <Thứ tự nhóm>
+Thành viên: | Họ và tên – MSV
+….
+….
+….
+Giảng viên: | TS. Trương Đức Phương
+STT | Tác nhân | Mô tả | Chức năng chính
+1 | Khách vãng lai (Guest) | Người truy cập hệ thống chưa có tài khoản | Xem sân bóng, xem bảng giá, đăng ký tài khoản
+2 | Khách hàng (Customer) | Người dùng đã đăng nhập | Xem sân, đặt sân, thanh toán cọc, hủy đặt sân, xem lịch sử
+3 | Nhân viên (Staff) | Người được cấp quyền vận hành | Duyệt đơn, check-in khách, bán dịch vụ, quản lý kho
+4 | Quản trị viên (Admin) | Người có toàn quyền hệ thống | Quản lý sân, cấu hình giá, quản lý dịch vụ, xem thống kê
+Mã UC | Tên Use Case | Tác nhân liên quan
+UC01 | Đăng ký tài khoản | Khách vãng lai
+UC02 | Đăng nhập hệ thống | Khách hàng, Nhân viên, Quản trị viên
+UC03 | Xem danh sách sân bóng | Khách vãng lai, Khách hàng
+UC04 | Đặt sân bóng | Khách hàng
+UC05 | Thanh toán tiền cọc | Khách hàng
+UC06 | Hủy đặt sân | Khách hàng
+UC07 | Xem lịch sử đặt sân | Khách hàng
+UC08 | Quản lý sân bóng | Quản trị viên
+UC09 | Cấu hình giá giờ vàng | Quản trị viên
+UC10 | Quản lý dịch vụ và kho hàng | Quản trị viên, Nhân viên
+UC11 | Bán dịch vụ tại quầy | Quản trị viên, Nhân viên
+UC12 | Duyệt và cập nhật trạng thái đặt sân | Quản trị viên, Nhân viên
+UC13 | Xem báo cáo thống kê doanh thu | Quản trị viên
+UC14 | Xem thông tin khách hàng thân thiết | Quản trị viên
+Mã Use Case | UC01
+Tên Use Case | Đăng ký tài khoản
+Tác nhân chính | Khách vãng lai
+Mô tả | Cho phép người dùng mới tạo tài khoản trên hệ thống bằng số điện thoại cá nhân để có thể sử dụng các chức năng đặt sân
+Tiền điều kiện | Người dùng chưa có tài khoản trong hệ thống
+Hậu điều kiện | Tài khoản mới được tạo thành công với vai trò Khách hàng, người dùng được tự động đăng nhập vào hệ thống
+Bước | Tác nhân (Khách vãng lai) | Hệ thống
+1 | Người dùng truy cập vào trang đăng ký tài khoản | Hiển thị biểu mẫu đăng ký bao gồm các trường: Họ và tên, Số điện thoại, Email, Mật khẩu
+2 | Nhập đầy đủ thông tin cá nhân theo yêu cầu | —
+3 | Nhấn nút "Đăng ký" | Tiếp nhận thông tin đăng ký từ người dùng
+4 | — | Kiểm tra số điện thoại đã tồn tại trong cơ sở dữ liệu hay chưa
+5 | — | Mã hóa mật khẩu và lưu thông tin tài khoản mới vào cơ sở dữ liệu với vai trò mặc định là Khách hàng
+6 | — | Cấp phiên đăng nhập cho người dùng và chuyển hướng đến trang chủ
+7 | Nhận thông báo đăng ký thành công, được chuyển đến trang chủ hệ thống | —
+Bước | Tác nhân | Hệ thống
+4a | — | Phát hiện số điện thoại đã tồn tại → Hiển thị thông báo lỗi: "Số điện thoại này đã được sử dụng"
+4b | Nhận thông báo lỗi, chỉnh sửa số điện thoại và thử lại | —
+Mã Use Case | UC02
+Tên Use Case | Đăng nhập hệ thống
+Tác nhân chính | Khách hàng, Nhân viên, Quản trị viên
+Mô tả | Cho phép người dùng đã có tài khoản xác thực danh tính để truy cập và sử dụng các chức năng theo quyền hạn được phân công
+Tiền điều kiện | Người dùng đã có tài khoản hợp lệ trong hệ thống
+Hậu điều kiện | Người dùng được xác thực thành công, hệ thống phân quyền và hiển thị giao diện phù hợp với vai trò
+Bước | Tác nhân (Người dùng) | Hệ thống
+1 | Người dùng truy cập trang đăng nhập | Hiển thị biểu mẫu đăng nhập gồm: Số điện thoại và Mật khẩu
+2 | Nhập Số điện thoại và Mật khẩu | —
+3 | Nhấn nút "Đăng nhập" | Tiếp nhận thông tin xác thực
+4 | — | Tìm kiếm tài khoản trong cơ sở dữ liệu theo số điện thoại
+5 | — | So sánh mật khẩu nhập vào với mật khẩu đã mã hóa trong cơ sở dữ liệu
+6 | — | Xác thực thành công, cấp phiên đăng nhập cho người dùng
+7 | — | Phân quyền theo vai trò: Quản trị viên/Nhân viên → trang quản trị; Khách hàng → trang chủ
+8 | Nhận thông báo đăng nhập thành công, được chuyển hướng đến giao diện tương ứng | —
+Bước | Tác nhân | Hệ thống
+5a | — | Số điện thoại không tồn tại hoặc mật khẩu không khớp → Hiển thị thông báo lỗi: "Số điện thoại hoặc mật khẩu không chính xác"
+5b | Nhận thông báo lỗi, chỉnh sửa thông tin và thử lại | —
+Mã Use Case | UC03
+Tên Use Case | Xem danh sách sân bóng
+Tác nhân chính | Khách vãng lai, Khách hàng
+Mô tả | Hiển thị danh sách toàn bộ sân bóng trong hệ thống kèm thông tin chi tiết như loại sân, giá cơ bản, trạng thái hoạt động và bảng giá theo khung giờ
+Tiền điều kiện | Không yêu cầu đăng nhập
+Hậu điều kiện | Người dùng xem được đầy đủ thông tin và bảng giá của các sân bóng
+Bước | Tác nhân (Người dùng) | Hệ thống
+1 | Người dùng truy cập trang chủ của hệ thống | Truy xuất danh sách toàn bộ sân bóng từ cơ sở dữ liệu
+2 | — | Hiển thị danh sách sân dưới dạng các thẻ thông tin, mỗi thẻ gồm: tên sân, loại sân, giá cơ bản, trạng thái, hình ảnh
+3 | Xem danh sách và chọn một sân bóng muốn xem chi tiết | —
+4 | Nhấn vào thẻ thông tin của sân | Truy xuất thông tin chi tiết của sân đã chọn, bao gồm cả bảng giá theo khung giờ
+5 | — | Hiển thị trang chi tiết sân: mô tả, địa chỉ, hình ảnh, bảng giá giờ thường và giờ vàng
+6 | Xem bảng giá chi tiết theo từng khung giờ | —
+Bước | Tác nhân | Hệ thống
+4a | — | Sân không tồn tại trong hệ thống → Hiển thị thông báo: "Không tìm thấy thông tin sân bóng"
+Mã Use Case | UC04
+Tên Use Case | Đặt sân bóng
+Tác nhân chính | Khách hàng
+Mô tả | Cho phép khách hàng đặt lịch thuê sân bóng theo ngày và khung giờ mong muốn. Hệ thống tự động tính giá dựa trên cấu hình giờ vàng và kiểm tra xung đột lịch đặt
+Tiền điều kiện | Khách hàng đã đăng nhập vào hệ thống (<<include>> UC02)
+Hậu điều kiện | Đơn đặt sân được tạo với trạng thái Chờ xác nhận, hệ thống ghi nhận tổng tiền và tiền cọc
+Bước | Tác nhân (Khách hàng) | Hệ thống
+1 | Chọn sân bóng muốn đặt từ danh sách sân | Hiển thị lưới lịch đặt sân của sân đã chọn, đánh dấu các khung giờ đã có người đặt
+2 | Chọn ngày, giờ bắt đầu và giờ kết thúc mong muốn | —
+3 | Nhấn nút "Xem giá" để xem trước chi phí | Thực hiện thuật toán tính giá đa hình: duyệt từng giờ trong khoảng đặt, nếu giờ nằm trong khung giờ vàng thì nhân hệ số giá tương ứng
+4 | — | Hiển thị bảng chi tiết giá từng giờ và tổng tiền dự kiến
+5 | Xem bảng chi tiết giá, xác nhận đồng ý với mức giá | —
+6 | Nhấn nút "Đặt sân" để xác nhận đặt | Kiểm tra xung đột lịch đặt sân: đảm bảo khung giờ chưa bị trùng với đơn đặt khác
+7 | — | Tính giá cuối cùng (áp dụng ưu đãi giảm giá VIP nếu khách hàng đủ điều kiện), tính tiền cọc
+8 | — | Tạo đơn đặt sân mới với trạng thái Chờ xác nhận, lưu vào cơ sở dữ liệu
+9 | Nhận thông báo đặt sân thành công | —
+Bước | Tác nhân | Hệ thống
+6a | — | Phát hiện khung giờ đã bị trùng với đơn đặt khác → Hiển thị thông báo lỗi: "Khung giờ này đã có người đặt, vui lòng chọn khung giờ khác"
+6b | Nhận thông báo lỗi, quay lại bước 2 để chọn khung giờ mới | —
+Mã Use Case | UC05
+Tên Use Case | Thanh toán tiền cọc
+Tác nhân chính | Khách hàng
+Mô tả | Cho phép khách hàng thực hiện thanh toán tiền cọc để xác nhận giữ chỗ cho đơn đặt sân
+Tiền điều kiện | Khách hàng đã đăng nhập (<<include>> UC02), đơn đặt sân đang ở trạng thái Chờ xác nhận
+Hậu điều kiện | Trạng thái đơn đặt sân chuyển sang Đã xác nhận
+Bước | Tác nhân (Khách hàng) | Hệ thống
+1 | Truy cập chức năng xem danh sách đơn đặt sân của mình | Truy xuất danh sách đơn đặt sân của khách hàng đang đăng nhập
+2 | — | Hiển thị danh sách đơn đặt sân kèm trạng thái, thông tin sân, ngày giờ, số tiền
+3 | Tìm đơn có trạng thái Chờ xác nhận, nhấn nút "Thanh toán cọc" | —
+4 | — | Kiểm tra trạng thái đơn hợp lệ (phải đang ở trạng thái Chờ xác nhận)
+5 | — | Cập nhật trạng thái đơn từ Chờ xác nhận sang Đã xác nhận
+6 | — | Hiển thị thông báo thanh toán cọc thành công, cập nhật trạng thái mới trên giao diện
+7 | Nhận xác nhận thanh toán cọc thành công | —
+Bước | Tác nhân | Hệ thống
+4a | — | Đơn đặt sân không ở trạng thái Chờ xác nhận (đã bị hủy hoặc đã thanh toán) → Hiển thị thông báo lỗi
+Mã Use Case | UC06
+Tên Use Case | Hủy đặt sân
+Tác nhân chính | Khách hàng
+Mô tả | Cho phép khách hàng tự hủy đơn đặt sân của mình khi không còn nhu cầu sử dụng
+Tiền điều kiện | Khách hàng đã đăng nhập (<<include>> UC02), đơn đặt sân thuộc về khách hàng hiện tại
+Hậu điều kiện | Trạng thái đơn chuyển sang Đã hủy, khung giờ được giải phóng cho người khác đặt
+Bước | Tác nhân (Khách hàng) | Hệ thống
+1 | Truy cập chức năng xem danh sách đơn đặt sân của mình | Hiển thị danh sách đơn đặt sân
+2 | Tìm đơn muốn hủy, nhấn nút "Hủy đặt sân" | —
+3 | Xác nhận muốn hủy đơn | Kiểm tra quyền sở hữu: đảm bảo đơn thuộc về khách hàng đang đăng nhập
+4 | — | Kiểm tra trạng thái đơn có cho phép hủy hay không
+5 | — | Cập nhật trạng thái đơn sang Đã hủy, giải phóng khung giờ trên lưới đặt sân
+6 | Nhận thông báo hủy đơn thành công | Cập nhật giao diện, hiển thị trạng thái mới
+Bước | Tác nhân | Hệ thống
+3a | — | Đơn không thuộc về khách hàng hiện tại → Từ chối yêu cầu hủy
+4a | — | Đơn đã ở trạng thái Hoàn thành hoặc đã bị hủy trước đó → Hiển thị thông báo lỗi không thể hủy
+Mã Use Case | UC07
+Tên Use Case | Xem lịch sử đặt sân
+Tác nhân chính | Khách hàng
+Mô tả | Cho phép khách hàng tra cứu toàn bộ lịch sử các lần đặt sân của mình, bao gồm tất cả các trạng thái
+Tiền điều kiện | Khách hàng đã đăng nhập vào hệ thống (<<include>> UC02)
+Hậu điều kiện | Hiển thị danh sách đầy đủ các đơn đặt sân với mọi trạng thái
+Bước | Tác nhân (Khách hàng) | Hệ thống
+1 | Nhấn vào mục "Lịch sử đặt sân" trên thanh điều hướng | —
+2 | — | Truy xuất danh sách tất cả đơn đặt sân của khách hàng đang đăng nhập từ cơ sở dữ liệu
+3 | — | Hiển thị danh sách đơn theo thứ tự thời gian, mỗi đơn gồm: tên sân, ngày giờ, trạng thái, tổng tiền, tiền cọc
+4 | Xem danh sách và theo dõi trạng thái từng đơn đặt sân | —
+Mã Use Case | UC08
+Tên Use Case | Quản lý sân bóng
+Tác nhân chính | Quản trị viên
+Mô tả | Cho phép Quản trị viên thực hiện các thao tác thêm mới, xem, chỉnh sửa và xóa thông tin sân bóng trong hệ thống
+Tiền điều kiện | Đã đăng nhập với vai trò Quản trị viên
+Hậu điều kiện | Thông tin sân bóng được cập nhật trong cơ sở dữ liệu
+Bước | Tác nhân (Quản trị viên) | Hệ thống
+1 | Truy cập chức năng quản lý sân bóng | Hiển thị danh sách sân hiện có và biểu mẫu thêm sân mới
+2 | Nhập thông tin sân mới: Tên sân, Loại sân (5 người/7 người/11 người), Giá thuê cơ bản theo giờ, Mô tả, Địa chỉ, Hình ảnh | —
+3 | Nhấn nút "Tạo sân" | Kiểm tra tính hợp lệ của dữ liệu (không trùng tên sân, giá hợp lệ)
+4 | — | Lưu thông tin sân mới vào cơ sở dữ liệu
+5 | Nhận thông báo tạo sân thành công, danh sách sân được cập nhật | —
+Bước | Tác nhân (Quản trị viên) | Hệ thống
+1 | Chọn sân cần chỉnh sửa từ danh sách | Hiển thị biểu mẫu chỉnh sửa với dữ liệu hiện tại của sân
+2 | Thay đổi các thông tin cần cập nhật | —
+3 | Nhấn nút "Cập nhật" | Kiểm tra dữ liệu mới hợp lệ, cập nhật thông tin sân trong cơ sở dữ liệu
+4 | Nhận thông báo cập nhật thành công | —
+Bước | Tác nhân (Quản trị viên) | Hệ thống
+1 | Chọn sân cần xóa, nhấn nút "Xóa" | —
+2 | Xác nhận muốn xóa sân | Xóa thông tin sân và toàn bộ cấu hình giá liên quan khỏi cơ sở dữ liệu
+3 | Nhận thông báo xóa thành công | Cập nhật lại danh sách sân trên giao diện
+Bước | Tác nhân | Hệ thống
+3a | — | Tên sân bị trùng với sân đã tồn tại → Hiển thị thông báo lỗi
+2a (Xóa) | — | Không tìm thấy sân trong cơ sở dữ liệu → Hiển thị thông báo lỗi
+Mã Use Case | UC09
+Tên Use Case | Cấu hình giá giờ vàng
+Tác nhân chính | Quản trị viên
+Mô tả | Cho phép Quản trị viên thiết lập các khung giờ có mức giá đặc biệt (giờ vàng) cho từng sân bóng, với hệ số nhân giá linh hoạt. Giá thực tế = Giá cơ bản × Hệ số nhân
+Tiền điều kiện | Đã đăng nhập với vai trò Quản trị viên, sân bóng cần cấu hình đã tồn tại
+Hậu điều kiện | Cấu hình giá giờ vàng được lưu, thuật toán tính giá sẽ áp dụng cho các đơn đặt sân tiếp theo
+Quan hệ | <<extend>> UC08 – Quản lý sân bóng
+Bước | Tác nhân (Quản trị viên) | Hệ thống
+1 | Trong chức năng quản lý sân, chọn sân cần cấu hình giờ vàng | Truy xuất danh sách cấu hình giá hiện tại của sân đã chọn
+2 | — | Hiển thị danh sách khung giờ vàng đang áp dụng (giờ bắt đầu, giờ kết thúc, hệ số nhân, nhãn)
+3 | Thêm hoặc chỉnh sửa khung giờ vàng. Ví dụ: 17:00–21:00, hệ số ×1.5, nhãn "Giờ Vàng" | —
+4 | Nhấn nút "Lưu cấu hình" | Xóa cấu hình cũ và lưu cấu hình mới vào cơ sở dữ liệu
+5 | — | Hiển thị thông báo cập nhật cấu hình giá thành công
+6 | Nhận xác nhận cấu hình thành công | —
+Mã Use Case | UC10
+Tên Use Case | Quản lý dịch vụ và kho hàng
+Tác nhân chính | Quản trị viên, Nhân viên
+Mô tả | Cho phép Quản trị viên và Nhân viên quản lý danh mục dịch vụ đi kèm (nước uống, đồ ăn nhẹ...), bao gồm thêm, sửa, xóa dịch vụ và quản lý số lượng tồn kho
+Tiền điều kiện | Đã đăng nhập với vai trò Quản trị viên hoặc Nhân viên
+Hậu điều kiện | Danh mục dịch vụ và số lượng tồn kho được cập nhật
+Bước | Tác nhân (Quản trị viên/Nhân viên) | Hệ thống
+1 | Truy cập chức năng quản lý kho hàng | Truy xuất và hiển thị danh sách dịch vụ hiện có: tên, giá bán, số lượng tồn kho
+2 | Nhập thông tin dịch vụ mới: Tên dịch vụ, Giá bán, Số lượng nhập kho | —
+3 | Nhấn nút "Thêm" | Kiểm tra quyền truy cập (chỉ Quản trị viên hoặc Nhân viên)
+4 | — | Lưu dịch vụ mới vào cơ sở dữ liệu
+5 | Nhận thông báo thêm dịch vụ thành công, danh sách được cập nhật | —
+Bước | Tác nhân (Quản trị viên/Nhân viên) | Hệ thống
+1 | Chọn dịch vụ cần chỉnh sửa từ danh sách | Hiển thị biểu mẫu chỉnh sửa với thông tin hiện tại
+2 | Thay đổi thông tin (giá bán, tên) hoặc bổ sung số lượng tồn kho | —
+3 | Nhấn nút "Cập nhật" | Cập nhật thông tin dịch vụ trong cơ sở dữ liệu
+4 | Nhận thông báo cập nhật thành công | —
+Bước | Tác nhân | Hệ thống
+3a | — | Người dùng không có quyền Quản trị viên hoặc Nhân viên → Từ chối truy cập, hiển thị thông báo không có quyền thực hiện
+Mã Use Case | UC11
+Tên Use Case | Bán dịch vụ tại quầy
+Tác nhân chính | Nhân viên, Quản trị viên
+Mô tả | Cho phép Nhân viên hoặc Quản trị viên bán đồ uống, dịch vụ đi kèm cho khách đang sử dụng sân. Hệ thống tự động trừ kho và ghi nhận doanh thu vào đơn đặt sân tương ứng
+Tiền điều kiện | Đã đăng nhập với vai trò Quản trị viên hoặc Nhân viên, có đơn đặt sân đang ở trạng thái Đã check-in
+Hậu điều kiện | Chi tiết dịch vụ được ghi nhận vào đơn đặt sân, số lượng tồn kho được trừ tương ứng
+Bước | Tác nhân (Nhân viên/Quản trị viên) | Hệ thống
+1 | Tại trang quản lý đặt sân, chọn đơn đặt sân đang check-in | Hiển thị danh sách dịch vụ/nước uống có sẵn trong kho
+2 | Chọn dịch vụ cần bán và nhập số lượng (ví dụ: 2 chai nước suối) | —
+3 | Nhấn nút "Bán dịch vụ" | Kiểm tra quyền truy cập (Quản trị viên hoặc Nhân viên)
+4 | — | Kiểm tra số lượng tồn kho có đủ để bán hay không
+5 | — | Trừ số lượng tồn kho, ghi nhận chi tiết dịch vụ vào đơn đặt sân (tên dịch vụ, số lượng, đơn giá, thành tiền)
+6 | — | Hiển thị thông báo: "Bán dịch vụ thành công"
+7 | Nhận xác nhận, số lượng kho được cập nhật tự động | —
+Bước | Tác nhân | Hệ thống
+4a | — | Số lượng tồn kho không đủ hoặc hết hàng → Hiển thị thông báo lỗi
+3a | — | Người dùng không có quyền → Từ chối truy cập
+Mã Use Case | UC12
+Tên Use Case | Duyệt và cập nhật trạng thái đặt sân
+Tác nhân chính | Nhân viên, Quản trị viên
+Mô tả | Cho phép Nhân viên hoặc Quản trị viên quản lý toàn bộ luồng trạng thái của đơn đặt sân: Duyệt đơn, Từ chối, Check-in khi khách đến, Thanh toán hoàn thành
+Tiền điều kiện | Đã đăng nhập với vai trò Quản trị viên hoặc Nhân viên
+Hậu điều kiện | Trạng thái đơn đặt sân được cập nhật. Khi hoàn thành, hệ thống tự động cộng điểm thân thiết cho khách hàng
+Bước | Tác nhân (Nhân viên/Quản trị viên) | Hệ thống
+1 | Truy cập chức năng quản lý đặt sân | Truy xuất toàn bộ danh sách đơn đặt sân
+2 | — | Hiển thị danh sách đơn: Tên khách hàng, Tên sân, Ngày giờ, Trạng thái hiện tại, Tổng tiền
+3 | Chọn đơn cần xử lý, chọn trạng thái mới phù hợp (ví dụ: Đã check-in) | —
+4 | Nhấn nút cập nhật trạng thái | Kiểm tra trạng thái mới có hợp lệ hay không
+5 | — | Cập nhật trạng thái đơn trong cơ sở dữ liệu
+6 | — | Nếu chuyển sang trạng thái Hoàn thành: tự động cộng điểm thân thiết cho khách hàng theo công thức quy đổi
+7 | Nhận thông báo cập nhật trạng thái thành công | Cập nhật giao diện hiển thị trạng thái mới
+Bước | Tác nhân | Hệ thống
+4a | — | Trạng thái mới không hợp lệ hoặc bị bỏ trống → Hiển thị thông báo lỗi
+3a | Chọn "Từ chối" đơn đặt sân | Cập nhật trạng thái sang Đã từ chối, giải phóng khung giờ
+Mã Use Case | UC13
+Tên Use Case | Xem báo cáo thống kê doanh thu
+Tác nhân chính | Quản trị viên
+Mô tả | Cho phép Quản trị viên xem các báo cáo tổng quan và biểu đồ thống kê doanh thu theo nhiều chiều: tổng quan hệ thống, theo tháng, theo ngày, theo từng sân bóng
+Tiền điều kiện | Đã đăng nhập với vai trò Quản trị viên
+Hậu điều kiện | Hiển thị trang tổng quan quản trị với các biểu đồ thống kê trực quan
+Bước | Tác nhân (Quản trị viên) | Hệ thống
+1 | Truy cập chức năng báo cáo thống kê | —
+2 | — | Truy xuất số liệu tổng quan: tổng doanh thu, tổng số đơn đặt sân, tổng số khách hàng, tổng số sân
+3 | — | Hiển thị 4 thẻ số liệu tổng quan ở đầu trang
+4 | Chọn xem doanh thu theo tháng, chọn năm cần xem | Truy xuất dữ liệu doanh thu 12 tháng trong năm đã chọn
+5 | — | Hiển thị biểu đồ cột doanh thu 12 tháng
+6 | Chọn xem doanh thu theo ngày, chọn năm và tháng | Truy xuất dữ liệu doanh thu từng ngày trong tháng đã chọn
+7 | — | Hiển thị biểu đồ đường doanh thu theo ngày
+8 | Chọn xem doanh thu theo sân bóng | Truy xuất dữ liệu doanh thu của từng sân trong năm
+9 | — | Hiển thị biểu đồ tròn phân bổ doanh thu theo sân
+Mã Use Case | UC14
+Tên Use Case | Xem thông tin khách hàng thân thiết
+Tác nhân chính | Quản trị viên
+Mô tả | Cho phép Quản trị viên xem danh sách khách hàng kèm thông tin hạng thân thiết (Đồng, Bạc, Vàng, Kim Cương) và điểm tích lũy. Hạng thân thiết quyết định mức ưu đãi giảm giá khi đặt sân
+Tiền điều kiện | Đã đăng nhập với vai trò Quản trị viên
+Hậu điều kiện | Hiển thị danh sách khách hàng sắp xếp theo điểm tích lũy giảm dần
+Bước | Tác nhân (Quản trị viên) | Hệ thống
+1 | Truy cập chức năng quản lý khách hàng | Truy xuất danh sách tất cả khách hàng từ cơ sở dữ liệu, sắp xếp theo điểm tích lũy giảm dần
+2 | — | Xác định hạng thân thiết cho mỗi khách hàng dựa trên điểm tích lũy
+3 | — | Hiển thị danh sách khách hàng: Họ tên, Số điện thoại, Điểm tích lũy, Hạng thân thiết
+4 | Xem danh sách và theo dõi thông tin từng khách hàng | —
+Hạng thân thiết | Điểm tích lũy | Ưu đãi giảm giá
+Đồng | Dưới 100 điểm | 0%
+Bạc | 100 – 299 điểm | 5%
+Vàng | 300 – 599 điểm | 10%
+Kim Cương | Từ 600 điểm trở lên | 15%
+Mã UC | Tên Use Case | Khách vãng lai | Khách hàng | Nhân viên | Quản trị viên
+UC01 | Đăng ký tài khoản | ✓
+UC02 | Đăng nhập hệ thống | ✓ | ✓ | ✓
+UC03 | Xem danh sách sân bóng | ✓ | ✓
+UC04 | Đặt sân bóng | ✓
+UC05 | Thanh toán tiền cọc | ✓
+UC06 | Hủy đặt sân | ✓
+UC07 | Xem lịch sử đặt sân | ✓
+UC08 | Quản lý sân bóng | ✓
+UC09 | Cấu hình giá giờ vàng | ✓
+UC10 | Quản lý dịch vụ/kho hàng | ✓ | ✓
+UC11 | Bán dịch vụ tại quầy | ✓ | ✓
+UC12 | Duyệt/Cập nhật đặt sân | ✓ | ✓
+UC13 | Xem báo cáo thống kê | ✓
+UC14 | Xem khách hàng thân thiết | ✓

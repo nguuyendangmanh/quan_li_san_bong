@@ -1,0 +1,189 @@
+BÁO CÁO CHI TIẾT BÀI TẬP LỚN - PHÂN HỆ THÀNH VIÊN
+PHẦN 2.5: THIẾT KẾ CƠ SỞ DỮ LIỆU HỆ THỐNG
+Đề tài: Hệ thống Quản lý Sân bóng Mini (Football Pitch Booking System)
+
+
+2.5. Thiết kế cơ sở dữ liệu
+Cơ sở dữ liệu (CSDL) là thành phần cốt lõi của Hệ thống Quản lý Sân bóng Mini, chịu trách nhiệm lưu trữ và quản lý toàn bộ các thông tin về người dùng, lịch đặt sân, các dịch vụ phụ trợ, giao dịch thanh toán của khách hàng và các báo cáo thống kê doanh thu. Hệ thống sử dụng hệ quản trị cơ sở dữ liệu quan hệ MySQL, đảm bảo tính toàn vẹn dữ liệu thông qua các ràng buộc khóa ngoại chặt chẽ và thiết kế chuẩn hóa đạt mức 3NF (Third Normal Form) nhằm tối ưu hiệu năng truy vấn cho các hoạt động thời gian thực (real-time booking).
+2.5.1. Tổng quan kiến trúc dữ liệu và Lựa chọn Hệ quản trị CSDL
+2.5.1.1. Các mục tiêu thiết kế cơ sở dữ liệu hệ thống
+Trong quá trình phân tích và thiết kế cơ sở dữ liệu cho hệ thống, các tiêu chí kỹ thuật sau được ưu tiên đặt lên hàng đầu:
+Tính toàn vẹn và nhất quán (Integrity & Consistency) : Đảm bảo các giao dịch đặt sân và thanh toán diễn ra nhất quán. Lịch đặt sân không được trùng lặp (double-booking) tại một sân bóng trong cùng một khoảng thời gian.
+Hiệu năng truy vấn cao (Performance optimization) : Tối ưu hóa thời gian phản hồi cho các truy vấn kiểm tra sân trống và báo cáo doanh thu thông qua cấu trúc bảng tối giản và hệ thống chỉ mục (index) thông minh.
+Khả năng mở rộng tốt (Scalability) : Cho phép dễ dàng mở rộng, bổ sung các nghiệp vụ mới như quản lý thẻ thành viên, chương trình khuyến mãi hoặc tích hợp nhiều chi nhánh sân bóng trong tương lai.
+2.5.1.2. Lý do lựa chọn Hệ quản trị cơ sở dữ liệu MySQL
+Hệ thống quyết định sử dụng MySQL phiên bản 8.0 làm hệ quản trị cơ sở dữ liệu chính thức vì các lý do thực tế sau:
+Hỗ trợ Transaction chuẩn ACID : Hỗ trợ cơ chế lưu trữ InnoDB bảo đảm đầy đủ các tính chất ACID (Atomicity, Consistency, Isolation, Durability) phục vụ tốt cho các giao dịch đặt cọc và thanh toán tiền mặt/chuyển khoản.
+Hệ sinh thái tương thích tốt : Kết nối mượt mà và tối ưu hiệu suất với nền tảng Java Spring Boot thông qua Spring Data JPA và Hibernate ORM.
+Mã nguồn mở và phổ biến : MySQL là mã nguồn mở, hoạt động ổn định, dễ dàng deploy và quản lý trên các dịch vụ đám mây (Cloud hosting) với chi phí tối ưu.
+2.5.2. Sơ đồ thực thể liên kết (ERD - Entity Relationship Diagram)
+Sơ đồ thực thể liên kết (ERD) là bản vẽ mô tả trực quan các thực thể nghiệp vụ, thuộc tính của từng thực thể và mối quan hệ ràng buộc giữa các thực thể đó trong cơ sở dữ liệu hệ thống quản lý sân bóng mini. Sơ đồ được xây dựng dựa trên nguyên tắc chuẩn hóa dữ liệu, đảm bảo phản ánh chính xác các quy trình nghiệp vụ thực tế.
+2.5.2.1. Hình vẽ sơ đồ thực thể liên kết (ERD)
+
+Hình 4.1: Sơ đồ thực thể liên kết (ERD) hệ thống Quản lý Sân bóng Mini
+2.5.2.2. Phân tích chi tiết các thực thể chính
+Thực thể 'users' (Người dùng): Lưu trữ tài khoản của chủ sân (Admin), nhân viên tiếp quầy (Staff) và khách hàng đặt sân trực tuyến (Customer). Chứa thông tin đăng nhập quan trọng (số điện thoại và mật khẩu mã hóa BCrypt) cùng thông tin phụ trợ như tích điểm thành viên (loyalty points).
+Thực thể 'football_fields' (Sân bóng): Đại diện cho các sân bóng vật lý có trong hệ thống (Sân 5 người, Sân 7 người, Sân 11 người) với thông tin về giá thuê cơ bản của mỗi giờ đá và trạng thái sân.
+Thực thể 'bookings' (Đơn đặt sân): Thực thể nghiệp vụ trung tâm kết nối người dùng thuê với sân bóng trong một khung giờ cụ thể (start_time và end_time), kiểm soát số tiền đặt cọc bắt buộc và trạng thái đơn hàng.
+Thực thể 'payments' (Thanh toán): Quản lý chi tiết dòng tiền đổ vào hệ thống, lưu trữ cụ thể từng giao dịch cọc (Deposit) hoặc thanh toán hoàn tất (Final), hỗ trợ các phương thức trả tiền mặt hoặc chuyển khoản ngân hàng.
+Thực thể 'services' (Dịch vụ): Lưu trữ thông tin về các mặt hàng dịch vụ hỗ trợ như nước uống giải khát, thuê bóng động lực, thuê áo tập thể đấu hoặc thuê giày thể thao.
+Thực thể 'booking_services' (Chi tiết dịch vụ): Đóng vai trò là thực thể bắc cầu (bridge table) giải quyết mối quan hệ nhiều-nhiều giữa bookings và services, nhằm ghi nhận số lượng cụ thể và thành tiền (subtotal) của từng dịch vụ mà khách đã sử dụng.
+2.5.2.3. Phân tích mối liên kết giữa các thực thể
+Mối quan hệ Users - Bookings (1 - n)Một người dùng có thể thực hiện đặt sân nhiều lần trong hệ thống, nhưng mỗi đơn đặt sân (booking) bắt buộc phải thuộc quyền sở hữu của một tài khoản người dùng xác định. Ràng buộc toàn vẹn được duy trì bởi khóa ngoại `user_id` trong bảng `bookings` tham chiếu đến `users(id)`.
+Mối quan hệ Football Fields - Bookings (1 - n)Một sân bóng có thể được cho thuê ở nhiều khung giờ khác nhau bởi nhiều khách hàng khác nhau. Ngược lại, mỗi đơn đặt sân chỉ được đặt thuê cho một sân bóng duy nhất tại một thời điểm. Mối quan hệ được liên kết qua khóa ngoại `field_id` trong bảng `bookings` tham chiếu đến `football_fields(id)`.
+Mối quan hệ Bookings - Payments (1 - n)Để kiểm soát dòng tiền, một đơn đặt sân có thể trải qua hai giao dịch thanh toán khác nhau (Thanh toán đặt cọc 30% để giữ sân trước trận đấu và thanh toán nốt 70% còn lại cùng dịch vụ sau khi trận đấu kết thúc). Liên kết khóa ngoại `booking_id` trong bảng `payments` tham chiếu đến `bookings(id)`.
+Mối quan hệ Bookings - Services (n - m)Mỗi lượt thuê sân có thể gọi nhiều dịch vụ và mỗi dịch vụ có thể được bán cho nhiều đơn đặt sân khác nhau. Mối quan hệ nhiều-nhiều này được phân rã thành hai mối quan hệ 1-nhiều thông qua bảng trung gian `booking_services` với hai khóa ngoại liên kết tương ứng là `booking_id` tham chiếu đến `bookings(id)` và `service_id` tham chiếu đến `services(id)`.
+2.5.3. Lược đồ quan hệ và Phân tích chuẩn hóa dữ liệu (Normalization)
+2.5.3.1. Định nghĩa lược đồ cơ sở dữ liệu quan hệ
+Dưới đây là lược đồ quan hệ chi tiết của hệ thống dưới dạng cấu trúc thuộc tính (thuộc tính gạch chân đại diện cho Khóa chính - Primary Key, thuộc tính in nghiêng và có ký hiệu (*) đại diện cho Khóa ngoại - Foreign Key):
+users (id, full_name, phone, email, password, role, loyalty_points)
+football_fields (id, name, field_type, price_per_hour, image_url, status)
+bookings (id, *user_id*, *field_id*, start_time, end_time, deposit_amount, total_price, status)
+payments (id, *booking_id*, amount, payment_type, payment_method, transaction_time)
+services (id, name, price, stock_quantity)
+booking_services (id, *booking_id*, *service_id*, quantity, subtotal)
+2.5.3.2. Chứng minh thiết kế cơ sở dữ liệu đạt dạng chuẩn 3NF
+Để đảm bảo cơ sở dữ liệu hoạt động tối ưu, không có hiện tượng dư thừa thông tin hoặc dị thường dữ liệu khi thực hiện thêm, sửa, xóa (Insert/Update/Delete anomalies), cấu trúc các bảng đã được thiết kế tuân thủ nghiêm ngặt theo các lý thuyết chuẩn hóa:
+Đáp ứng Dạng chuẩn 3 (3NF):
+2.5.4. Từ điển dữ liệu chi tiết và Câu lệnh khởi tạo bảng (DDL)
+Phần này trình bày cụ thể từ điển dữ liệu vật lý (Data Dictionary) và câu lệnh SQL tạo bảng (Data Definition Language - DDL) tương ứng cho từng bảng trong hệ thống, đi kèm giải thích chi tiết các ràng buộc toàn vẹn nghiệp vụ.
+2.5.4.1. Bảng dữ liệu 'users' (Người dùng hệ thống)
+Bảng này lưu trữ thông tin định danh và phân quyền của toàn bộ thành viên trong hệ thống (chủ sân, nhân viên, khách hàng). Số điện thoại được dùng làm định danh duy nhất để đăng nhập.
+Câu lệnh DDL khởi tạo bảng:
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    full_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(15) NOT NULL UNIQUE,
+    email VARCHAR(100),
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    loyalty_points INT DEFAULT 0
+);
+Quy tắc ràng buộc nghiệp vụ: Cột 'phone' bắt buộc phải tuân thủ định dạng số điện thoại Việt Nam (10 chữ số) và được cài đặt ràng buộc UNIQUE để tránh việc đăng ký trùng lặp tài khoản. Trường 'password' lưu trữ chuỗi băm BCrypt có độ dài cố định để đảm bảo an toàn tuyệt đối.
+2.5.4.2. Bảng dữ liệu 'football_fields' (Thông tin sân bóng)
+Bảng lưu trữ thông tin chi tiết về cơ sở vật chất sân bóng mini, phục vụ cho việc hiển thị danh sách sân trống và tính toán giá thuê.
+Câu lệnh DDL khởi tạo bảng:
+CREATE TABLE IF NOT EXISTS football_fields (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    field_type INT NOT NULL, /* Ví dụ: 5, 7, 11 người */
+    price_per_hour DECIMAL(10, 2) NOT NULL,
+    image_url VARCHAR(255),
+    status VARCHAR(50) DEFAULT 'AVAILABLE'
+);
+Quy tắc ràng buộc nghiệp vụ: Cột 'field_type' chỉ được nhận các giá trị hợp lệ là 5, 7 hoặc 11 (tương ứng loại sân 5, 7 hoặc 11 người). Đơn giá 'price_per_hour' không được phép nhỏ hơn 0.
+2.5.4.3. Bảng dữ liệu 'bookings' (Lịch đặt sân bóng)
+Bảng này ghi nhận toàn bộ thông tin đặt sân của khách hàng, đóng vai trò kết nối giữa người dùng và sân bóng cụ thể trong một mốc thời gian xác định.
+Câu lệnh DDL khởi tạo bảng:
+CREATE TABLE IF NOT EXISTS bookings (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    field_id BIGINT NOT NULL,
+    start_time DATETIME NOT NULL,
+    end_time DATETIME NOT NULL,
+    deposit_amount DECIMAL(10, 2) DEFAULT 0,
+    total_price DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) DEFAULT 'PENDING',
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (field_id) REFERENCES football_fields(id)
+);
+Quy tắc ràng buộc nghiệp vụ: Thời gian bắt đầu 'start_time' phải nhỏ hơn thời gian kết thúc 'end_time'. Hệ thống sẽ kiểm tra chặn không cho phép lưu đơn đặt mới nếu trùng khoảng thời gian [start_time, end_time] trên cùng một sân bóng 'field_id'. Cột 'status' chỉ chấp nhận các giá trị: 'PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'.
+2.5.4.4. Bảng dữ liệu 'payments' (Lịch sử giao dịch thanh toán)
+Lưu trữ chi tiết các giao dịch thanh toán tiền cọc hoặc thanh toán hoàn tất hóa đơn của khách hàng thực hiện qua quầy hoặc chuyển khoản trực tuyến.
+Câu lệnh DDL khởi tạo bảng:
+CREATE TABLE IF NOT EXISTS payments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    booking_id BIGINT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    payment_type VARCHAR(50), /* 'DEPOSIT', 'FINAL' */
+    payment_method VARCHAR(50), /* 'CASH', 'TRANSFER' */
+    transaction_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id)
+);
+Quy tắc ràng buộc nghiệp vụ: Cột 'amount' thanh toán phải lớn hơn 0. Giao dịch thanh toán bắt buộc phải liên kết với một hóa đơn đặt sân đã tồn tại hợp lệ thông qua khóa ngoại 'booking_id'.
+2.5.4.5. Bảng dữ liệu 'services' (Danh mục dịch vụ đi kèm)
+Quản lý danh sách các mặt hàng dịch vụ phụ trợ mà sân bóng cung cấp cho khách thuê có nhu cầu sử dụng thêm trong trận đấu.
+Câu lệnh DDL khởi tạo bảng:
+CREATE TABLE IF NOT EXISTS services (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INT DEFAULT 0
+);
+Quy tắc ràng buộc nghiệp vụ: Số lượng tồn kho 'stock_quantity' không được nhỏ hơn 0. Đơn giá dịch vụ 'price' phải là số dương lớn hơn 0.
+2.5.4.6. Bảng dữ liệu 'booking_services' (Chi tiết dịch vụ của đơn đặt)
+Lưu trữ thông tin chi tiết về số lượng dịch vụ phụ trợ cụ thể được gọi cho mỗi đơn đặt sân, làm cơ sở tính tổng tiền hóa đơn cuối cùng cho khách hàng.
+Câu lệnh DDL khởi tạo bảng:
+CREATE TABLE IF NOT EXISTS booking_services (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    booking_id BIGINT NOT NULL,
+    service_id BIGINT NOT NULL,
+    quantity INT NOT NULL,
+    subtotal DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (booking_id) REFERENCES bookings(id),
+    FOREIGN KEY (service_id) REFERENCES services(id)
+);
+Quy tắc ràng buộc nghiệp vụ: 'quantity' số lượng dịch vụ khách gọi phải lớn hơn hoặc bằng 1. Giá trị 'subtotal' (thành tiền) phải khớp chính xác với công thức: (số lượng dịch vụ) * (giá dịch vụ tại thời điểm bán).
+2.5.5. Tối ưu hóa hiệu năng truy vấn và Thiết lập Đánh chỉ mục (Index)
+Trong hệ thống đặt sân bóng, hiệu năng truy vấn là yếu tố quyết định đến trải nghiệm người dùng, đặc biệt là khi số lượng khách hàng truy cập kiểm tra lịch sân trống cùng một lúc tăng cao. Nếu không được tối ưu, hệ thống dễ rơi vào tình trạng phản hồi chậm hoặc bị khóa bảng (table locking). Do đó, thiết kế cơ sở dữ liệu đã thiết lập bổ sung các chỉ mục (indexes) chiến lược:
+2.5.5.1. Các chỉ mục cần thiết được đánh cho cơ sở dữ liệu
+Index trên bảng bookings (field_id, start_time, end_time) : Tăng tốc độ kiểm tra các khoảng thời gian trống của sân bóng. Khi khách hàng tìm kiếm sân trống trong khung [T1, T2], MySQL sẽ sử dụng chỉ mục này để tìm kiếm nhị phân thay vì quét toàn bộ bảng (Table Scan).
+Index trên bảng users (phone) : Giúp tối ưu hóa tốc độ tìm kiếm tài khoản khi đăng nhập và xác thực JWT token của người dùng.
+Index trên bảng payments (booking_id) : Tối ưu hóa các truy vấn tìm kiếm lịch sử giao dịch thanh toán của một hóa đơn đặt sân cụ thể.
+2.5.5.2. Các câu lệnh SQL khởi tạo chỉ mục
+Dưới đây là các câu lệnh SQL DDL dùng để tạo chỉ mục trên các cột thường xuyên xuất hiện trong mệnh đề WHERE của truy vấn:
+-- 1. Tạo chỉ mục phức hợp tối ưu kiểm tra xung đột lịch đặt sân
+CREATE INDEX idx_booking_field_time ON bookings (field_id, start_time, end_time);
+
+-- 2. Tạo chỉ mục trên số điện thoại để tăng tốc xác thực người dùng
+CREATE INDEX idx_user_phone ON users (phone);
+
+-- 3. Tạo chỉ mục khóa ngoại hỗ trợ truy xuất nhanh thanh toán
+CREATE INDEX idx_payment_booking ON payments (booking_id);
+2.5.6. Các câu lệnh SQL mẫu hỗ trợ nghiệp vụ cốt lõi (Sample Queries)
+Để đảm bảo cơ sở dữ liệu hoạt động chính xác và minh chứng rõ ràng cách thức phân hệ CSDL giải quyết các bài toán nghiệp vụ phức tạp của hệ thống quản lý sân bóng mini, dưới đây là 3 câu lệnh SQL mẫu tiêu biểu:
+2.5.6.1. Câu lệnh kiểm tra xung đột lịch đặt sân (Double-Booking Check)
+Nghiệp vụ: Khi khách hàng yêu cầu đặt sân bóng A từ thời điểm T1 đến T2, hệ thống cần kiểm tra xem sân đó đã được ai đặt và xác nhận trước đó chưa. Nếu số lượng đơn trùng khớp trả về lớn hơn 0, đơn đặt mới sẽ bị từ chối để tránh trùng lịch.
+-- Giả định kiểm tra sân số 1 (field_id = 1), giờ bắt đầu '2026-07-05 15:00:00' đến '2026-07-05 16:30:00'
+SELECT COUNT(*) AS conflict_count
+FROM bookings
+WHERE field_id = 1
+  AND status IN ('CONFIRMED', 'PENDING')
+  AND NOT (end_time <= '2026-07-05 15:00:00' OR start_time >= '2026-07-05 16:30:00');
+Giải thích logic: Điều kiện phủ định NOT (end_time <= T1 OR start_time >= T2) là phương pháp tối ưu nhất để kiểm tra giao nhau giữa hai khoảng thời gian [start_time, end_time] và [T1, T2].
+2.5.6.2. Câu lệnh thống kê doanh thu chi tiết theo từng sân bóng trong tháng
+Nghiệp vụ: Quản trị viên cần xuất báo cáo tài chính thống kê tổng doanh thu thực tế (bao gồm tiền thuê sân và tiền bán dịch vụ đi kèm) thu được từ từng sân bóng trong tháng 7 năm 2026 để đánh giá hiệu quả kinh doanh.
+SELECT 
+    f.id AS field_id,
+    f.name AS field_name,
+    COALESCE(SUM(b.total_price), 0) AS total_pitch_rental_revenue,
+    COALESCE(SUM(bs_sum.total_service_revenue), 0) AS total_service_revenue,
+    (COALESCE(SUM(b.total_price), 0) + COALESCE(SUM(bs_sum.total_service_revenue), 0)) AS grand_total_revenue
+FROM football_fields f
+LEFT JOIN bookings b ON f.id = b.field_id 
+    AND b.status = 'COMPLETED' 
+    AND b.start_time BETWEEN '2026-07-01 00:00:00' AND '2026-07-31 23:59:59'
+LEFT JOIN (
+    -- Subquery tính tổng tiền dịch vụ theo từng booking_id
+    SELECT booking_id, SUM(subtotal) AS total_service_revenue
+    FROM booking_services
+    GROUP BY booking_id
+) bs_sum ON b.id = bs_sum.booking_id
+GROUP BY f.id, f.name
+ORDER BY grand_total_revenue DESC;
+Giải thích logic: Sử dụng phép kết trái LEFT JOIN để đảm bảo các sân bóng không có lượt thuê nào trong tháng vẫn xuất hiện trong báo cáo với doanh thu bằng 0 (xử lý qua hàm COALESCE). Phép gộp GROUP BY theo mã sân giúp tính tổng chính xác cho từng đối tượng sân.
+2.5.6.3. Câu lệnh thống kê Top 5 dịch vụ đi kèm có số lượng bán nhiều nhất
+Nghiệp vụ: Quản trị viên cần thống kê xem các loại dịch vụ nước uống, thuê bóng, giày nào được khách hàng ưa chuộng sử dụng nhiều nhất để có kế hoạch nhập thêm hàng tồn kho hợp lý.
+SELECT 
+    s.id AS service_id,
+    s.name AS service_name,
+    SUM(bs.quantity) AS total_quantity_sold,
+    SUM(bs.subtotal) AS total_revenue_generated
+FROM booking_services bs
+JOIN services s ON bs.service_id = s.id
+JOIN bookings b ON bs.booking_id = b.id
+WHERE b.status = 'COMPLETED'
+GROUP BY s.id, s.name
+ORDER BY total_quantity_sold DESC
+LIMIT 5;
+Giải thích logic: Câu lệnh thực hiện kết nối (JOIN) ba bảng `booking_services`, `services` và `bookings`. Điều kiện lọc `status = 'COMPLETED'` để đảm bảo chỉ những dịch vụ thực sự đã tiêu dùng và thanh toán mới được đưa vào thống kê. Sắp xếp giảm dần theo tổng lượng bán ra (ORDER BY DESC) và giới hạn 5 bản ghi (LIMIT 5) giúp lọc nhanh top bán chạy nhất.

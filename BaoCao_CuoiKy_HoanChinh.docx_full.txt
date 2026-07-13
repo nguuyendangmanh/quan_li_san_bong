@@ -1,0 +1,130 @@
+ĐẠI HỌC PHENIKAA
+TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
+KỸ THUẬT PHẦN MỀM 
+(CSE702025)
+ĐỀ TÀI: <Tên đề tài>
+Năm học: 2025-2026
+MỤC LỤC
+DANH MỤC BẢNG BIỂU
+DANH MỤC HÌNH VẼ
+DANH MỤC TỪ VIẾT TẮT (nếu có)
+MỞ ĐẦU
+Giới thiệu
+Mô tả bài toán
+Mục đích hệ thống
+Phạm vi hệ thống
+Đối tượng sử dụng
+Từ điển thuật ngữ
+Phân tích và thiết kế hệ thống
+Phân tích yêu cầu chức năng
+Quy trình nghiệp vụ
+Các chức năng của hệ thống
+Biểu đồ use case
+Đặc tả các use case
+Yêu cầu phi chức năng
+Yêu cầu về giao diện người dùng
+Yêu cầu về tính bảo mật
+Các ràng buộc
+Các yêu cầu phi chức năng khác (nếu có)
+Kiến trúc tổng thể hệ thống
+Biểu đồ lớp
+Thiết kế cơ sở dữ liệu
+Kết quả thực hiện
+Công nghệ sử dụng
+Các giao diện chính 
+Chụp màn hình các giao diện chính
+Kiểm thử phần mềm
+Chỉ yêu cầu mô tả test 5-7 chức năng
+Kết luận
+Phân công nhiệm vụ 
+Bảng phân công nhiệm vụ của các thành viên
+CHƯƠNG 3: THIẾT KẾ HỆ THỐNG
+3.1. Tổng quan về Kiến trúc và Phương pháp luận Thiết kế
+Trong quá trình phát triển phần mềm, giai đoạn thiết kế hệ thống đóng vai trò mang tính quyết định, là cầu nối giữa các yêu cầu nghiệp vụ (Business Requirements) và quá trình triển khai mã nguồn thực tế (Implementation). Đối với đề tài "Hệ thống Quản lý và Đặt sân bóng đá nhân tạo", kiến trúc hệ thống được xây dựng dựa trên mô hình Client-Server, áp dụng triệt để kiến trúc đa tầng (N-Tier Architecture) thông qua framework Java Spring Boot ở phía Backend và Vanilla JavaScript ở phía Frontend.
+Sự lựa chọn công nghệ này không chỉ đảm bảo hiệu năng xử lý cao (high performance) mà còn cung cấp khả năng mở rộng (scalability) và dễ dàng bảo trì (maintainability) trong tương lai. Để minh họa trực quan và chính xác cấu trúc tĩnh cũng như hành vi động của hệ thống, Báo cáo sử dụng Ngôn ngữ Mô hình hóa Thống nhất (UML - Unified Modeling Language) với hai biểu đồ cốt lõi: Sơ đồ Lớp (Class Diagram) và Sơ đồ Tuần tự (Sequence Diagram). Những sơ đồ này là bản thiết kế (blueprint) định hướng cho toàn bộ quá trình ánh xạ đối tượng vào cơ sở dữ liệu quan hệ (Object-Relational Mapping - ORM) thông qua JPA/Hibernate và điều hướng luồng dữ liệu (Data Flow) trong hệ thống.
+3.2. Phân tích Sơ đồ Lớp (Class Diagram) và Thiết kế Cơ sở dữ liệu (Database Design)
+                                  Hình 1: Sơ đồ lớp(Class Diagram).
+Sơ đồ Lớp thể hiện cấu trúc tĩnh của hệ thống, bao gồm các lớp đối tượng (Classes), thuộc tính (Attributes), phương thức (Methods) và mối quan hệ (Relationships) giữa chúng. Trong mô hình MVC (Model-View-Controller) của Spring Boot, các lớp này tương ứng với tầng Model (hay cụ thể hơn là các Entity/Domain Model). Nhờ công nghệ ORM (Hibernate), mỗi Entity sẽ được ánh xạ trực tiếp thành một bảng (Table) trong Cơ sở dữ liệu quan hệ (RDBMS) như MySQL hoặc PostgreSQL. Dưới đây là phân tích chuyên sâu về các thực thể cốt lõi trong hệ thống.
+3.2.1. Thực thể `User` (Quản lý Người dùng)
+Thực thể User đóng vai trò trung tâm trong việc định danh, xác thực (Authentication) và phân quyền (Authorization). Đây là thực thể quản lý cả khách hàng (Customer) lẫn nhân viên quản lý/chủ sân (Admin/Manager).
+•   Đặc tả thuộc tính:
+•   id (Primary Key): Khóa chính tự động tăng (Auto-increment), sử dụng chiến lược GenerationType.IDENTITY để tối ưu hóa việc chèn dữ liệu.
+•   username và password: Thông tin đăng nhập. Đặc biệt, thuộc tính password không bao giờ được lưu dưới dạng plain-text (văn bản thuần túy) nhằm tuân thủ nguyên tắc bảo mật. Mật khẩu được mã hóa một chiều (one-way hashing) sử dụng thuật toán BCrypt trước khi lưu trữ xuống Database, giúp chống lại các cuộc tấn công Brute-force hoặc Rainbow Table.
+•   email và phone: Các trường định danh duy nhất (Unique constraints), phục vụ cho quá trình liên lạc, gửi thông báo xác nhận đặt sân (Email Notification) và OTP.
+•   role (Phân quyền): Thuộc tính này thường được ánh xạ dưới dạng kiểu Enum (ví dụ: ROLE_USER, ROLE_ADMIN). Sự tồn tại của thuộc tính này là cơ sở để cấu hình Spring Security áp dụng mô hình Kiểm soát truy cập dựa trên vai trò (Role-Based Access Control - RBAC). Tùy thuộc vào Role, User sẽ được cấp phép truy cập vào các API Endpoints khác nhau.
+•   loyaltyPoints (Điểm tích lũy): Đây là một quyết định thiết kế tinh tế nhằm thúc đẩy sự gắn kết của khách hàng (Customer Retention). Thay vì tạo ra một trường lưu trữ hạng VIP (Gold, Silver, Bronze) cứng nhắc, hệ thống lưu trữ một giá trị định lượng là loyaltyPoints. Điểm số này tăng lên sau mỗi giao dịch đặt sân thành công. Dựa trên số điểm, hệ thống có thể tính toán động (dynamic calculation) ra thứ hạng của người dùng. Ưu điểm của kiến trúc này là sự linh hoạt tuyệt đối: khi chủ sân muốn thay đổi chính sách VIP (ví dụ: tăng mốc điểm lên hạng từ 1000 lên 2000), hệ thống không cần phải chạy kịch bản cập nhật (Migration Script) lại dữ liệu của hàng ngàn User trong DB, mà chỉ cần thay đổi công thức tính toán tại tầng Business Service.
+•   Mối quan hệ: Thực thể User có mối quan hệ Một-Nhiều (1-N) với thực thể Booking. Một khách hàng có thể thực hiện nhiều giao dịch đặt sân theo thời gian. Mối quan hệ này được cấu hình bằng annotation @OneToMany trong JPA. Tuy nhiên, để tối ưu hóa hiệu năng và tránh vấn đề N+1 Query khét tiếng trong Hibernate, cơ chế nạp dữ liệu trễ (Lazy Loading - FetchType.LAZY) được áp dụng. Điều này có nghĩa là khi truy vấn thông tin User, hệ thống sẽ không tự động tải toàn bộ lịch sử Booking của họ lên bộ nhớ RAM trừ khi có lời gọi phương thức truy cập rõ ràng.
+3.2.2. Thực thể `Field` (Quản lý Sân bóng)
+Thực thể Field đại diện cho tài nguyên vật lý cốt lõi mà hệ thống cung cấp: các sân bóng đá cỏ nhân tạo.
+•   Đặc tả thuộc tính:
+•   fieldId (Khóa chính): Định danh duy nhất cho mỗi sân bóng.
+•   name: Tên sân (Ví dụ: Sân số 1, Sân VIP A).
+•   type: Loại sân (Sân 5 người, Sân 7 người, Sân 11 người). Kiểu dữ liệu này được thiết kế theo dạng Enum để đảm bảo tính an toàn kiểu (Type Safety) ở tầng mã nguồn và giảm thiểu lỗi do nhập liệu không đồng nhất (Data Anomaly) trong cơ sở dữ liệu.
+•   basePrice: Mức giá cơ sở (Giá gốc) cho 1 giờ thuê sân. Thuộc tính này sử dụng kiểu dữ liệu BigDecimal thay vì Double hay Float để tránh các sai số làm tròn thập phân trong tính toán tài chính. Mặc dù basePrice tồn tại, nhưng nó hiếm khi là giá cuối cùng mà khách hàng phải trả, mà đóng vai trò là "tham số đầu vào" cho hệ thống Cấu hình giá động.
+•   status: Trạng thái hiện tại của sân. Gồm các giá trị: AVAILABLE (Sẵn sàng hoạt động), MAINTENANCE (Đang bảo trì/Sửa chữa cỏ). Việc lưu trữ trạng thái này cho phép hệ thống ngăn chặn các giao dịch đặt sân vào những thời điểm cơ sở vật chất không đảm bảo, giúp tăng tính chuyên nghiệp trong quản lý.
+•   Mối quan hệ: Thực thể Field có mối quan hệ Một-Nhiều (1-N) với thực thể Booking. Mỗi sân bóng sẽ có một danh sách các lịch đặt sân theo thời gian.
+3.2.3. Thực thể `PriceConfig` (Hệ thống Cấu hình Giá động)
+Một trong những điểm sáng và là thách thức lớn nhất trong hệ thống là bài toán tối ưu hóa doanh thu thông qua chiến lược Định giá động (Dynamic Pricing). Trong lĩnh vực kinh doanh sân bóng phong trào, nhu cầu thuê sân biến động cực kỳ mạnh mẽ theo từng khung giờ trong ngày (Ví dụ: khung giờ vàng 17h00 - 20h30 nhu cầu cực cao, trong khi sáng sớm hoặc trưa thì sân trống).
+•   Quyết định thiết kế kiến trúc (Architectural Decision): Thay vì thêm hàng loạt các cột như price_morning, price_evening, price_weekend vào bảng Field – một cách làm vi phạm nghiêm trọng các quy tắc chuẩn hóa cơ sở dữ liệu (Database Normalization) và cực kỳ cứng nhắc (Hard-coded), hệ thống được thiết kế tách biệt phần cấu hình giá thành một thực thể độc lập là PriceConfig. Sự phân tách này tuân thủ nguyên lý Đơn trách nhiệm (Single Responsibility Principle) trong SOLID. Bảng Field chỉ quản lý thông tin tĩnh của sân, trong khi PriceConfig chịu trách nhiệm quy định các quy tắc về giá.
+•   Đặc tả thuộc tính:
+•   configId (Khóa chính).
+•   startTime và endTime: Xác định khoảng thời gian của một khung giờ (Ví dụ: 17:00 đến 19:00). Kiểu dữ liệu sử dụng là LocalTime (thuộc gói java.time chuẩn của Java 8), giúp việc xử lý logic thời gian chính xác và độc lập với múi giờ (Timezone) nếu cần mở rộng.
+•   dayOfWeek: Áp dụng cho các ngày cụ thể trong tuần (Ví dụ: Giá cuối tuần Thứ 7, Chủ Nhật sẽ cao hơn ngày thường).
+•   multiplier (Hệ số nhân giá): Đây là tham số cốt lõi. Ví dụ, nếu sân có basePrice là 300.000 VNĐ, khung "Giờ vàng" có multiplier là 1.5, thì giá thực tế khách phải trả là 300.000 x 1.5 = 450.000 VNĐ/giờ. Ngược lại, giờ thấp điểm có thể có multiplier là 0.7 để kích cầu.
+Việc thiết kế bảng PriceConfig cho phép Admin hoặc Chủ sân sử dụng giao diện quản trị (Dashboard) để linh hoạt thêm, sửa, xóa các quy tắc giá (Rules) theo chiến lược kinh doanh thực tế mà không cần đội ngũ kỹ thuật can thiệp vào mã nguồn hay khởi động lại hệ thống (Zero Downtime).
+3.2.4. Thực thể `Booking` (Hệ thống Đặt Sân)
+Thực thể Booking là trái tim của hệ thống, chứa đựng phần lớn các Logic nghiệp vụ phức tạp nhất. Trong mô hình Domain-Driven Design (DDD), Booking đóng vai trò là một Aggregate Root (Gốc tập hợp), liên kết và điều phối thông tin từ các thực thể khác.
+•   Đặc tả thuộc tính:
+•   bookingId: Mã phiếu đặt sân.
+•   startTime, endTime: Điểm bắt đầu và kết thúc của phiên đặt sân. Kiểu dữ liệu LocalDateTime.
+•   totalPrice: Tổng số tiền khách hàng phải thanh toán sau khi đã áp dụng mọi thuật toán giá động và chiết khấu. Việc lưu trữ cứng (persist) giá trị này tại thời điểm đặt sân là bắt buộc để đảm bảo tính lịch sử. Nếu trong tương lai chủ sân thay đổi bảng giá, các hóa đơn cũ (Booking) vẫn phải giữ nguyên giá trị totalPrice tại thời điểm giao dịch diễn ra.
+•   status: Trạng thái của Booking (PENDING, CONFIRMED, CANCELLED, COMPLETED).
+•   Mối quan hệ liên kết (Mappings):
+•   @ManyToOne với User: Liên kết qua khóa ngoại user_id. Cho biết ai là người đặt sân.
+•   @ManyToOne với Field: Liên kết qua khóa ngoại field_id. Cho biết đặt sân nào.
+Mối quan hệ này giải quyết triệt để bài toán theo dõi vết (Tracking) và truy vấn lịch sử hoạt động của hệ thống.
+3.2.5. Thực thể `Service` (Hệ sinh thái Dịch vụ nước uống, phụ kiện)
+Mô hình kinh doanh sân bóng hiện đại không chỉ dừng lại ở việc cho thuê mặt cỏ mà còn mở rộng ra việc bán các dịch vụ kèm theo (Nước giải khát, Áo tập, Thuê bóng, Giày). Thực thể Service được ra đời nhằm mục đích số hóa quy trình quản lý này.
+•   Đặc tả thuộc tính:
+•   serviceId, name, price.
+•   stockQuantity (Số lượng tồn kho): Đặc biệt quan trọng đối với các mặt hàng vật lý như nước uống.
+•   Giải pháp xử lý tương tranh (Concurrency Control): Một vấn đề hóc búa phát sinh là tình trạng "Race Condition" (Điều kiện tương tranh). Giả sử trong kho chỉ còn lại 1 thùng nước (stock = 1). Cùng một thời điểm chính xác tính bằng mili-giây, có 2 giao dịch Booking (nhân viên A và nhân viên B) cùng thao tác thêm dịch vụ này vào đơn hàng. Nếu không xử lý tốt, hệ thống sẽ bán ra 2 thùng nước, dẫn đến tình trạng kho bị âm (negative stock).
+Để giải quyết, thực thể Service được tích hợp một thuộc tính đặc biệt là version đi kèm với annotation @Version của JPA/Hibernate. Đây là kỹ thuật Khóa lạc quan (Optimistic Locking). Khi nhân viên A và B cùng đọc dữ liệu stock = 1 và version = 1, A cập nhật thành công (stock về 0, version lên 2). B lúc này submit yêu cầu, Hibernate sẽ đối chiếu version = 1 của B so với version = 2 dưới DB, phát hiện xung đột và ném ra ngoại lệ OptimisticLockException. Giao dịch của B sẽ bị từ chối, đảm bảo tính toàn vẹn và chính xác tuyệt đối của dữ liệu tồn kho.
+3.4. Phân tích Sơ đồ Tuần tự (Sequence Diagram) - Luồng Đặt Sân Bóng
+                                   Hình 2: Sơ đồ tuần tự(Sequence Diagram).
+Sơ đồ Tuần tự minh họa cách thức các đối tượng (Objects/Components) tương tác với nhau theo một trình tự thời gian nhất định để hoàn thành một Use Case (Ca sử dụng). Luồng đặt sân bóng từ phía khách hàng là quá trình phức tạp nhất, đòi hỏi sự phối hợp nhịp nhàng giữa nhiều lớp (Layers) trong kiến trúc phần mềm, từ Frontend xuyên qua Backend API và chạm tới tầng Data Persistence.
+Dưới đây là diễn giải chi tiết về cơ chế hoạt động bên trong của hệ thống ứng với từng bước trong luồng xử lý:
+Bước 1: Tiếp nhận và Xác thực Dữ liệu tại API Controller (The Entry Point)
+Giao diện Web (Vanilla JS + HTML/CSS) sau khi thu thập thông tin người dùng (chọn sân, chọn giờ) sẽ đóng gói thành một đối tượng JSON và gửi đi dưới dạng một HTTP POST Request tới địa chỉ /api/bookings.
+Tại Backend (Spring Boot), lớp DispatcherServlet sẽ điều hướng request này tới BookingController.
+•   Xác thực tính hợp lệ (Data Validation): Trước khi đi sâu vào nghiệp vụ, Controller đóng vai trò là "người gác cổng". Thông qua cơ chế JSR-380 (Hibernate Validator) với các annotation như @NotNull, @FutureOrPresent, hệ thống đảm bảo rằng payload JSON nhận được là hoàn toàn hợp lệ (Ví dụ: startTime không được phép nằm trong quá khứ, endTime phải lớn hơn startTime). Quá trình này được gọi là "Fail-Fast" – từ chối ngay lập tức các Request rác, trả về mã lỗi HTTP 400 Bad Request, giúp bảo vệ tài nguyên tính toán của hệ thống khỏi các yêu cầu vô nghĩa hoặc các nỗ lực tấn công mạng.
+Bước 2: Kiểm tra Trạng thái Tài nguyên tại Business Service
+Sau khi qua cửa ải Controller, Request được chuyển giao cho lớp BookingService. Tại đây, tầng nghiệp vụ bắt đầu hoạt động. Dữ liệu từ Request (như fieldId) được sử dụng để gọi tầng FieldRepository truy vấn trực tiếp xuống Database.
+Mục đích của bước này là kiểm tra xem Sân bóng đó có tồn tại hay không, và thuộc tính status của nó có đang là MAINTENANCE (bảo trì) hay không. Nếu sân đang sửa chữa, hệ thống sẽ lập tức ném ra một Custom Exception (Ví dụ: FieldNotAvailableException), ngắt luồng xử lý và trả về thông báo lỗi thân thiện cho khách hàng (HTTP 409 Conflict).
+Bước 3: Thuật toán chống Trùng lịch (Check Time Overlap Algorithm)
+Đây là bài toán logic cốt lõi và khó nhằn nhất của một hệ thống đặt chỗ (Booking System). Yêu cầu tiên quyết là: *Không bao giờ để xảy ra tình trạng 2 khách hàng đặt thành công cùng một sân bóng tại một khoảng thời gian bị giao nhau*.
+•   Cơ chế hoạt động: Thay vì truy vấn toàn bộ danh sách Booking của sân bóng đó lên bộ nhớ RAM (App Server) rồi dùng vòng lặp for để so sánh – một cách làm cực kỳ tốn chi phí và gây rò rỉ bộ nhớ (Memory Leak) nếu dữ liệu lớn, kiến trúc hệ thống ủy thác toàn bộ việc tính toán này cho Database Engine (MySQL/PostgreSQL) thông qua truy vấn SQL được tối ưu hóa.
+•   Thuật toán toán học: Khoảng thời gian khách muốn đặt (từ newStart đến newEnd) sẽ bị trùng (overlap) với một khoảng thời gian đã tồn tại (từ existingStart đến existingEnd) khi và chỉ khi thỏa mãn biểu thức logic:
+(newStart < existingEnd) AND (newEnd > existingStart)
+•   Triển khai thực tế: Tại lớp BookingRepository, một hàm JPQL (Java Persistence Query Language) được định nghĩa:
+boolean existsByFieldIdAndStatusAndStartTimeLessThanAndEndTimeGreaterThan(Long fieldId, BookingStatus status, LocalDateTime endTime, LocalDateTime startTime);
+Hàm này chỉ trả về true hoặc false. Nếu kết quả là true, nghĩa là đã có người đặt khung giờ đó, BookingService sẽ từ chối Request. Để thuật toán này chạy cực nhanh, cơ sở dữ liệu đã được cấu hình đánh chỉ mục (Database Indexing) kiểu B-Tree lên các cột start_time và end_time.
+Bước 4: Thuật toán Tính Giá Động (Dynamic Pricing) và Chiết khấu
+Khi sân bóng đã được xác nhận là trống, hệ thống bước vào giai đoạn tính toán tài chính. Quá trình tính giá (totalPrice) không đơn thuần là lấy số giờ x đơn giá, mà phải đi qua một "đường ống" (Pipeline) tính toán phức tạp:
+1.  Tính giá cơ sở: Xác định số khoảng thời gian (Duration) khách thuê.
+2.  Áp dụng Cấu hình Giá động (PriceConfig): Thuật toán sẽ quét qua khoảng thời gian khách đặt (startTime - endTime), đối chiếu với bảng PriceConfig trong Database. Nếu khách đặt khung 16h - 18h, trong đó 16h-17h là giờ bình thường (multiplier = 1.0), còn 17h-18h lọt vào "Giờ vàng" (multiplier = 1.5), thuật toán sẽ tự động cắt khung giờ làm 2 phần và tính nội suy từng phần để cộng dồn lại. Kiến trúc này mang lại sự linh hoạt vô tiền khoáng hậu, tính toán chính xác tới từng phút theo bảng giá.
+3.  Hệ thống Khách hàng thân thiết (Loyalty Program): Tiếp theo, hệ thống truy xuất điểm loyaltyPoints của đối tượng User hiện tại. Nếu điểm số vượt qua ngưỡng quy định (Ví dụ: trên 1000 điểm đạt hạng VIP), thuật toán sẽ áp dụng một tỷ lệ phần trăm chiết khấu (Discount Percentage) vào tổng số tiền vừa tính ở bước 2. Điều này giúp cá nhân hóa trải nghiệm khách hàng và tối ưu chiến lược Marketing.
+Bước 5: Quản trị Giao dịch (Transaction Management) và Đảm bảo Tính Toàn vẹn Dữ liệu (Data Integrity)
+Bước cuối cùng trong Sequence Diagram là lưu toàn bộ thông tin (Persist Data) xuống hệ quản trị cơ sở dữ liệu. Quá trình này bao gồm hàng loạt thao tác thay đổi trạng thái (INSERT Booking, INSERT Booking_Service, UPDATE User LoyaltyPoints, UPDATE Service Stock).
+•   Nguy cơ hệ thống: Trục trặc về mạng, cúp điện, hoặc lỗi dữ liệu (ví dụ: kho nước uống vừa bị mua hết ở một luồng khác) có thể xảy ra ở bất kỳ câu lệnh SQL nào ở giữa tiến trình. Nếu hệ thống đã lưu xong phiếu Đặt sân (Booking) nhưng lại báo lỗi khi lưu thông tin mua Nước uống, kết quả là dữ liệu bị "rác" (Inconsistent Data): Khách có sân nhưng không có nước, hóa đơn bị lệch.
+•   Giải pháp kiến trúc - Nguyên lý ACID: Để giải quyết triệt để, phương thức thực hiện đặt sân trong BookingService được bao bọc bởi annotation @Transactional của framework Spring. Cơ chế này áp dụng nguyên lý AOP (Aspect-Oriented Programming) tạo ra một ranh giới giao dịch (Transaction Boundary) cho luồng thực thi.
+Thuộc tính Atomicity (Tính Nguyên tử) được đảm bảo tuyệt đối: Toàn bộ chuỗi thao tác Database (từ Đặt sân -> Thêm dịch vụ -> Trừ tồn kho -> Cộng điểm) được coi là MỘT khối duy nhất (All or Nothing). Nếu bất kỳ một thao tác nào ném ra RuntimeException (ví dụ: lỗi hết số lượng nước uống trong kho do cơ chế Optimistic Locking ở Sơ đồ lớp ngăn chặn), Spring Framework sẽ tự động kích hoạt lệnh ROLLBACK. Toàn bộ các thay đổi trước đó sẽ bị xóa bỏ khỏi Database, hệ thống quay trở lại trạng thái sạch nguyên thủy trước khi gọi hàm. Chỉ khi tất cả các bước thành công 100%, lệnh COMMIT mới được gọi, dữ liệu mới thực sự được ghi vĩnh viễn (Durability).
+Việc ứng dụng Transactional Đảm bảo Tính toàn vẹn dữ liệu (Data Integrity), khẳng định tính chuyên nghiệp và độ tin độ tin cậy cấp doanh nghiệp (Enterprise-grade) của hệ thống phần mềm. Sau khi commit thành công, một Object JSON chứa toàn bộ thông tin Booking (kèm HTTP 201 Created) sẽ được trả về dọc theo trục Sequence Diagram, từ Service qua Controller và về tới Frontend để hiển thị màn hình thành công cho người dùng.
+*Báo cáo kết thúc Chương 3 tại đây. Cấu trúc và phương pháp thiết kế được trình bày đảm bảo một nền tảng vững chắc (Solid Foundation) để hiện thực hóa bằng mã nguồn ở giai đoạn tiếp theo.*
+Lớp: | <Điền tên lớp học phần>
+Nhóm: | <Thứ tự nhóm>
+Thành viên: | Họ và tên – MSV
+….
+….
+….
+Giảng viên: | TS. Trương Đức Phương

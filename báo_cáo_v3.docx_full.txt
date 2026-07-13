@@ -1,0 +1,89 @@
+ÁP DỤNG TRÒ CHƠI TIẾN HÓA VÀO MÔ HÌNH SPLIT FINE-TUNING ĐA MÁY CHỦ VỚI KIẾN TRÚC GÁN ĐIỂM CẮT CỐ ĐỊNH
+1. Động lực và Đóng góp của đề xuất (Motivation & Contributions)
+Bài báo gốc đề xuất mô hình Split Fine-Tuning (SFT) để huấn luyện Mô hình Ngôn ngữ Lớn (LLM) trên thiết bị di động. Tuy nhiên, bài gốc sử dụng thuật toán tối ưu hóa tập trung (Centralized Optimization - SQP) trên 1 máy chủ duy nhất. Khi mở rộng mạng lưới (Scale-up) lên hàng ngàn thiết bị, máy chủ sẽ bị quá tải tính toán và tạo ra "nút thắt cổ chai". Nếu cho phép thiết bị tự do chọn điểm cắt (Heterogeneous Split Points), quá trình gộp trọng số (FedAvg) sẽ bị phân mảnh, gây nhiễu (noise) và làm giảm độ chính xác của LLM.
+Để giải quyết triệt để vấn đề này, báo cáo đề xuất một kiến trúc hoàn toàn mới với 3 đóng góp chính:
+Kiến trúc Bày mâm (Pre-defined Split Packages): Máy chủ trung tâm không ép buộc từng thiết bị, mà gán các "điểm cắt" (split points) cố định cho các Edge Server dựa trên phân phối phần cứng thực tế (Clustering). Điều này loại bỏ hoàn toàn sự phân mảnh trọng số, giúp mô hình hội tụ hoàn hảo.
+Ra quyết định Phi tập trung (Decentralized Decision Making): Áp dụng Trò chơi Tiến hóa (Evolutionary Game), giao quyền tự quyết định chọn Server cho các thiết bị di động, giúp hệ thống có khả năng mở rộng vô hạn (Infinite Scalability).
+Cân bằng tải Tự nhiên (Natural Load Balancing): Thông qua hàm Payoff được thiết kế phụ thuộc vào mật độ người dùng, các thiết bị sẽ tự động "né" các Server đang bị nghẽn mạng để tìm đến các Server vắng hơn, đạt được trạng thái cân bằng Nash/ESS mà không cần bất kỳ bộ điều phối trung tâm nào can thiệp.
+2. Kiến trúc Hệ thống (System Architecture)
+Hệ thống bao gồm 3 thành phần chính:
+Bộ điều phối trung tâm (Central Coordinator): Chịu trách nhiệm khởi tạo LLM, thu thập các trọng số LoRA để cộng gộp (FedAvg). Đặc biệt, nó phân tích phân phối cấu hình của các thiết bị trong mạng để quy hoạch các Edge Server. (Ví dụ: Cấu hình mạng có 3 cụm thiết bị phổ biến -> Mở 3 Edge Server với 3 điểm cắt cố định ).
+Nhiều Máy chủ Biên (Edge Servers): Mỗi Edge Server  cung cấp một "Gói dịch vụ" cố định, bao gồm: Điểm cắt  (số block thiết bị phải tự gánh) và Mức lượng tử hóa  (hoặc mức nén ).
+Thiết bị di động (Mobile Devices): Đóng vai trò là các "Người chơi" (Players). Mỗi thiết bị tự đo lường phần cứng của mình (CPU, RAM, Băng thông) và chơi Trò chơi Tiến hóa để quyết định sẽ kết nối vào Edge Server nào.
+3. Mô hình Toán học (Mathematical Modeling)
+Kế thừa hệ thống công thức vững chắc từ bài báo gốc, báo cáo mở rộng Mô hình Tải máy chủ và bổ sung chi tiết các phương trình truyền tải, lượng tử hóa để phù hợp với môi trường Đa máy chủ (Multi-server).
+3.1. Hàm Quy hoạch Điểm cắt của Server trung tâm (Server Provisioning Function)
+Để đảm bảo sự "chịu thiệt" của các thiết bị (do không có điểm cắt hoàn hảo) chỉ rơi vào một thiểu số rất nhỏ, Server trung tâm sẽ chạy một thuật toán Phân cụm (Clustering) trước khi gán cứng các điểm cắt  cho các Edge Server. Gọi  là số block tối đa mà thiết bị  có thể gánh được. Mục tiêu của Server trung tâm là tìm ra một tập hợp các điểm cắt  sao cho tổng sự lãng phí tài nguyên của toàn mạng là nhỏ nhất: 
+3.2. Chi tiết Công thức Phân tích Độ trễ (Delay Analysis)
+Tổng độ trễ khi máy  chọn Server  là tổng của 6 thành phần: 
+Các công thức chi tiết (kế thừa từ bài gốc SFT):
+Trễ phân phối Transformer block (): Thời gian tải mô hình ban đầu  và tải LoRA . (Chú thích:  là kích thước file mô hình gốc (byte),  là kích thước file trọng số LoRA).
+Trễ tính toán cục bộ (): Phụ thuộc vào năng lực phần cứng thiết bị.  (Chú thích:  là khối lượng tính toán (FLOPs) ở chiều tiến trên thiết bị.  là tốc độ xung nhịp CPU/GPU của máy.  là số chu kỳ để xử lý dữ liệu).
+Trễ truyền tải Activation (): Với  là kích thước dữ liệu đầu ra,  là tỷ lệ nén của Server ,  là tốc độ mạng Uplink.  (Chú thích:  là dung lượng cục Activation cần gửi.  là tỷ lệ nén.  là tốc độ mạng tải lên phụ thuộc vào băng thông ).
+Trễ tính toán trên Server ( - ĐIỂM CẢI TIẾN): Thời gian xử lý phụ thuộc vào  (Tổng số thiết bị đang chọn Server ):  (Chú thích:  và  là khối lượng tính toán (FLOPs) chiều tiến và chiều lùi trên Server.  là năng lực xử lý của Server.  là số lượng điện thoại đang kết nối vào Server ).
+Trễ truyền Gradient () và Cập nhật cục bộ ():  (Chú thích:  là dung lượng cục Gradient gửi trả về.  là tốc độ mạng tải xuống.  là khối lượng tính toán chiều lùi (Gradients) trên thiết bị).
+Trễ truyền LoRA ():  (Chú thích: Truyền tệp LoRA kích thước  lên Server qua mạng Uplink ).
+3.3. Cơ chế Nén dữ liệu (Data Compression Scheme)
+Báo cáo kế thừa bộ 3 kỹ thuật nén từ bài báo gốc để giảm thiểu băng thông truyền Activation () và Gradient:
+Top-K Sparsification (Thưa thớt hóa): Chỉ giữ lại  phần tử có giá trị tuyệt đối lớn nhất trong ma trận , các phần tử khác gán bằng 0. Tỷ lệ thưa thớt (Sparsification rate) được tính bằng:  (Chú thích:  là số lượng phần tử giữ lại,  là tổng số phần tử ban đầu của ma trận ,  là tỷ lệ dữ liệu còn sót lại).
+Stochastic Quantization (Lượng tử hóa ngẫu nhiên): Sử dụng ít bit hơn để biểu diễn các phần tử khác 0. Với mức lượng tử hóa , tập các giá trị lượng tử  được chia đều trong khoảng từ  đến :  (Chú thích:  là tổng số mức lượng tử quy định số bit nén (vd: INT8).  là chỉ số mức hiện tại.  là giá trị lớn nhất và nhỏ nhất trong ma trận Activation).
+Lossless Encoding (Mã hóa không mất thông tin): Sử dụng mã hóa Golomb để tiếp tục nén ma trận nhị phân thưa thớt, tối ưu hóa kích thước dữ liệu cuối cùng ().
+3.4. Tiêu thụ bộ nhớ (Memory - )
+Bộ nhớ tiêu thụ trên thiết bị  khi chọn Server  (gánh  blocks):  (Chú thích:  là chiều ẩn (hidden dimension) của LLM.  là Batch size (Kích thước lô dữ liệu).  là Sequence Length (Độ dài chuỗi đầu vào).  là bộ nhớ RAM cần thiết để chạy 1 Transformer block).
+Ràng buộc cứng: Thiết bị bắt buộc phải có  (RAM tối đa của máy). Nếu vượt quá, chiến lược đó bị loại bỏ ngay lập tức.
+4. Xây dựng Trò chơi Tiến hóa (Evolutionary Game Formulation)
+Để phát biểu bài toán dưới dạng Trò chơi Tiến hóa một cách chuẩn mực học thuật, chúng ta định nghĩa 3 thành phần cốt lõi của trò chơi :
+Tập Người chơi (Players):  là tập hợp tất cả các thiết bị di động tham gia huấn luyện.
+Tập Chiến lược (Strategy Set): Khác với mô hình cũ yêu cầu không gian tìm kiếm khổng lồ, Tập chiến lược giờ đây cực kỳ nhỏ gọn: . Mỗi chiến lược  tương ứng với quyết định kết nối vào Edge Server . Khi thiết bị  chọn chiến lược , nó ngầm định phải chấp nhận điểm cắt  và cấu hình nén  do Server đó quy định.
+Tập Hàm Thỏa dụng (Payoffs): , trong đó  là điểm lợi ích của máy  khi áp dụng chiến lược .
+4.1. Cải tiến Hàm Thỏa dụng (Payoff Function - )
+Để đảm bảo phương trình Động lực học nhân bản luôn dương và hoạt động đúng logic học thuật, hàm Payoff được thiết kế dưới dạng Phần bù (1 - x) sau khi chuẩn hóa Min-Max các chỉ số về đoạn [0, 1]: 
+4.2. Phương trình Động lực học nhân bản (Replicator Dynamics) cá nhân hóa
+Gọi  là xác suất thiết bị  chọn Server  ở vòng (round) . Xác suất được cập nhật theo kinh nghiệm riêng của từng máy:  Trong đó:
+ là điểm Payoff thực tế thiết bị  vừa nhận được.
+ là Payoff trung bình kỳ vọng của thiết bị .
+Cơ chế đột biến (Mutation Rate ): Ở mỗi vòng, thiết bị có xác suất nhỏ  (ví dụ 1%) để chọn ngẫu nhiên một Server khác nhằm "thử nghiệm" xem tải trọng mạng lưới có thay đổi gì không.
+5. Quy trình Thuật toán chi tiết (Micro-level Algorithm Workflow)
+Để triển khai hệ thống vào thực tế (lập trình mô phỏng), quy trình vĩ mô ở trên được phân rã thành 2 thuật toán vi mô (Micro-level Algorithms) hoạt động lồng ghép vào nhau.
+5.1. Giai đoạn 1: Khởi tạo và Quy hoạch (Chạy 1 lần ở Epoch 0)
+Mục tiêu: Tìm ra các điểm cắt  tối ưu trước khi bắt đầu huấn luyện.
+Bước 1.1: Server Trung tâm thu thập siêu dữ liệu (metadata) từ toàn bộ  thiết bị: Dựa trên RAM () và năng lực tính toán (), tính toán số block tối đa  mà mỗi thiết bị có thể gánh được.
+Bước 1.2: Server Trung tâm chạy thuật toán K-means 1 chiều (1D Clustering) trên mảng dữ liệu  để tìm ra  cụm (Clusters) tâm điểm .
+Bước 1.3: Khởi tạo  Edge Servers. Mỗi Server  được gán cứng nhiệm vụ gánh phần mô hình từ block  đến .
+Bước 1.4: Thiết bị di động khởi tạo Bảng xác suất chiến lược  kích thước . Với mỗi thiết bị :
+Nếu  (Tràn RAM): Gán .
+Các Server còn lại: Gán xác suất đều .
+5.2. Giai đoạn 2: Vòng lặp Huấn luyện & Tiến hóa (Main Loop)
+Giai đoạn này bao gồm các vòng lặp (Rounds). Mỗi vòng lặp  thực hiện chi tiết các công đoạn sau:
+A. Lựa chọn Chiến lược (Strategy Sampling)
+Ở đầu vòng , mỗi thiết bị  thực hiện gieo xúc xắc (Roulette Wheel Selection hoặc Gumbel-Softmax) dựa trên phân bố xác suất  để chọn ra một Server đích .
+Các Edge Server  thống kê số lượng thiết bị kết nối vào mình ().
+B. Quá trình Lan truyền Tiến (Forward Propagation - Cấp độ Batch) Đối với mỗi mini-batch  trong tập dữ liệu cục bộ của thiết bị :
+Tại Thiết bị :
+Đưa batch  đi qua  block đầu tiên của pre-trained model và bộ trọng số LoRA cục bộ .
+Thu được ma trận Activation trung gian .
+Nén vi mô: Áp dụng Top-K để lọc giữ lại  phần tử lớn nhất của . Áp dụng Stochastic Quantization biến các giá trị float32 thành INT8. Dùng Golomb encoding mã hóa và gửi gói dữ liệu  qua mạng Uplink lên Server .
+Tại Edge Server :
+Nhận gói dữ liệu, giải mã (Decode) và giải lượng tử (Dequantize) khôi phục lại ma trận  (có sai số nhẹ do nén).
+Đưa  đi qua các block còn lại (từ  đến ) và bộ LoRA .
+Tính toán hàm Loss  dựa trên nhãn (Label) thực tế.
+C. Quá trình Lan truyền Lùi (Backward Propagation - Cấp độ Batch)
+Tại Edge Server :
+Tính đạo hàm lùi (Gradients). Cập nhật bộ trọng số LoRA trên Server .
+Trích xuất Gradient tại điểm cắt , tiến hành Nén lượng tử hóa (tương tự chiều tiến) và gửi qua mạng Downlink về lại thiết bị .
+Tại Thiết bị :
+Giải lượng tử Gradient nhận được.
+Tiếp tục lan truyền lùi qua  block cục bộ để tính Gradient cho LoRA thiết bị.
+Cập nhật LoRA thiết bị .
+D. Đo lường và Tiến hóa (Evolutionary Update - Cuối vòng )
+Thiết bị  lưu lại log thời gian thực tế: Thời gian tính toán (), Thời gian mạng ().
+Edge Server  đo thời gian tính toán  thực tế (đã bị kéo dài do phải gánh  thiết bị).
+Thiết bị  tổng hợp các chỉ số, chuẩn hóa Min-Max và tính điểm Payoff thực tế .
+Cập nhật Bảng xác suất:
+Tính trung bình Payoff kỳ vọng .
+Cập nhật xác suất  bằng phương trình Replicator Dynamics. Có cộng thêm nhiễu đột biến  để khám phá Server khác.
+E. Gộp Trọng số Toàn cục (Global Aggregation - Cuối vòng ) Sau khi tất cả các thiết bị hoàn thành cập nhật cục bộ:
+Server Trung tâm thu thập bộ trọng số LoRA từ tất cả Edge Server và Thiết bị di động.
+Phân loại trọng số theo điểm cắt . Tiến hành Federated Averaging (FedAvg) cho từng cụm kiến trúc.
+Phân phối (Broadcast) bộ trọng số LoRA trung bình về lại các Edge Server và Thiết bị để chuẩn bị cho Vòng .
+Quá trình lặp lại cho đến khi mô hình LLM đạt độ chính xác yêu cầu, đồng thời Bảng xác suất  của các thiết bị tiến tới Cân bằng Nash (Không ai muốn chuyển Server nữa vì chuyển sẽ làm Payoff giảm).

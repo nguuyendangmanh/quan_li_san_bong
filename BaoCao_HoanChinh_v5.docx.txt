@@ -1,0 +1,174 @@
+
+ĐẠI HỌC PHENIKAA
+TRƯỜNG CÔNG NGHỆ THÔNG TIN PHENIKAA
+
+
+
+KỸ THUẬT PHẦN MỀM 
+(CSE702025)
+ĐỀ TÀI: <Tên đề tài>
+
+
+
+
+
+
+
+
+
+
+
+
+
+Năm học: 2025-2026
+MỤC LỤC
+
+
+DANH MỤC BẢNG BIỂU
+
+DANH MỤC HÌNH VẼ
+
+DANH MỤC TỪ VIẾT TẮT (nếu có)
+
+MỞ ĐẦU
+
+Giới thiệu
+Mô tả bài toán
+
+Mục đích hệ thống
+
+Phạm vi hệ thống
+
+Đối tượng sử dụng
+
+Từ điển thuật ngữ
+
+Phân tích và thiết kế hệ thống
+Phân tích yêu cầu chức năng
+
+Quy trình nghiệp vụ
+
+Các chức năng của hệ thống
+
+Các tác nhân (Actor) trong hệ thống:
+Danh sách các Use Case:
+Biểu đồ use case
+
+
+Hình: Sơ đồ Use Case tổng quan
+Sơ đồ trên mô tả tổng quan các chức năng chính của hệ thống và mối quan hệ giữa các tác nhân. Khách hàng bắt buộc phải đăng nhập trước khi thực hiện đặt sân, thanh toán, xem lịch sử (quan hệ <<include>>). Cấu hình giá giờ vàng là chức năng mở rộng của Quản lý sân (quan hệ <<extend>>).
+Đặc tả các use case
+
+5.1. UC01 – Đăng ký tài khoản
+
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.2. UC02 – Đăng nhập hệ thống
+
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.3. UC03 – Xem danh sách sân bóng
+
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.4. UC04 – Đặt sân bóng
+
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.5. UC05 – Thanh toán tiền cọc
+
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.6. UC06 – Hủy đặt sân
+
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.7. UC07 – Xem lịch sử đặt sân
+
+Luồng sự kiện chính (Basic Flow):
+
+5.8. UC08 – Quản lý sân bóng
+
+Luồng sự kiện chính – Thêm sân mới:
+
+Luồng sự kiện chính – Cập nhật sân:
+
+Luồng sự kiện chính – Xóa sân:
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.9. UC09 – Cấu hình giá giờ vàng
+
+Luồng sự kiện chính (Basic Flow):
+
+5.10. UC10 – Quản lý dịch vụ và kho hàng
+
+Luồng sự kiện chính – Thêm dịch vụ mới:
+
+Luồng sự kiện chính – Cập nhật/Bổ sung kho:
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.11. UC11 – Bán dịch vụ tại quầy
+
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.12. UC12 – Duyệt và cập nhật trạng thái đặt sân
+
+Luồng trạng thái đơn đặt sân: Chờ xác nhận → Đã xác nhận → Đã check-in → Hoàn thành
+Luồng sự kiện chính (Basic Flow):
+
+Luồng sự kiện thay thế (Alternative Flow):
+
+5.13. UC13 – Xem báo cáo thống kê doanh thu
+
+Luồng sự kiện chính (Basic Flow):
+
+5.14. UC14 – Xem thông tin khách hàng thân thiết
+
+Luồng sự kiện chính (Basic Flow):
+
+Bảng phân hạng khách hàng thân thiết:
+Quy tắc tích điểm: Mỗi 100.000 VNĐ thanh toán thành công tương đương 1 điểm tích lũy. Điểm được cộng tự động khi đơn đặt sân chuyển sang trạng thái Hoàn thành.
+6. Ma trận phân quyền Actor – Use Case
+Bảng dưới đây tổng hợp quyền truy cập của từng tác nhân đối với các Use Case trong hệ thống. Dấu ✓ thể hiện tác nhân có quyền thực hiện Use Case tương ứng.
+Yêu cầu phi chức năng
+Yêu cầu về giao diện người dùng
+
+Yêu cầu về tính bảo mật
+
+Các ràng buộc
+
+Các yêu cầu phi chức năng khác (nếu có)
+
+Kiến trúc tổng thể hệ thống
+
+Biểu đồ lớp
+
+Thiết kế cơ sở dữ liệu
+
+Kết quả thực hiện
+Công nghệ sử dụng
+Các giao diện chính 
+Chụp màn hình các giao diện chính
+Kiểm thử phần mềm
+Chỉ yêu cầu mô tả test 5-7 chức năng
+Kết luận
+Phân công nhiệm vụ 
+Bảng phân công nhiệm vụ của các thành viên
+
+
