@@ -78,4 +78,17 @@ public class AuthService {
         String token = tokenProvider.generateToken(newUser.getPhone(), newUser.getRole());
         return new AuthResponse(token, newUser.getRole(), "Đăng ký thành công!");
     }
+
+    @Autowired
+    private CustomerService customerService;
+
+    public com.football.dto.CustomerDTO getMe(String phone) {
+        User user = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+        com.football.dto.CustomerDTO dto = new com.football.dto.CustomerDTO(
+                user.getId().intValue(), user.getPhone(), user.getFullName(), user.getRole(), user.getLoyaltyPoints()
+        );
+        dto.setVipTier(customerService.getVipTierName(user.getLoyaltyPoints()));
+        return dto;
+    }
 }

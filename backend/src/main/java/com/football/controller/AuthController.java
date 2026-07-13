@@ -53,4 +53,16 @@ public class AuthController {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getMe(org.springframework.security.core.Authentication auth) {
+        if (auth == null) {
+            return ResponseEntity.status(401).body("{\"error\": \"Unauthorized\"}");
+        }
+        try {
+            return ResponseEntity.ok(authService.getMe(auth.getName()));
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("{\"error\": \"User not found\"}");
+        }
+    }
 }

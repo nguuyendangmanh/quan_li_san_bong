@@ -230,22 +230,37 @@
 let isLoggedIn = false;
 
 // 1. Kiểm tra trạng thái đăng nhập
-function checkLoginState() {
+async function checkLoginState() {
     const token = localStorage.getItem('jwt_token');
     if (token) {
         isLoggedIn = true;
-        // Parse JWT payload (optional, to get username)
         try {
-            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
-            document.getElementById('userActions').innerHTML = `
-                <span style="font-size: 14px; font-weight: 500; color: var(--primary);">👋 Chào, Khách hàng</span>
-                <a href="#" onclick="logout(event)" class="btn-outline" style="padding: 6px 12px; font-size: 13px;">Đăng xuất</a>
-            `;
-            document.getElementById('navMyBookings').style.display = 'block';
+            // Fetch thông tin người dùng từ backend
+            const res = await fetch(API_URL + '/api/auth/me', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            if (res.ok) {
+                const user = await res.json();
+                
+                // Hiển thị hạng VIP
+                const vipMap = { 'DONG': 'Đồng', 'BAC': 'Bạc', 'VANG': 'Vàng', 'KIMCUONG': 'Kim Cương' };
+                const tierName = vipMap[user.vipTier] || 'Đồng';
+                
+                document.getElementById('userActions').innerHTML = `
+                    <span style="font-size: 14px; font-weight: 500; color: var(--primary);">👋 Chào, ${user.fullName} (Hạng ${tierName})</span>
+                    <a href="#" onclick="logout(event)" class="btn-outline" style="padding: 6px 12px; font-size: 13px;">Đăng xuất</a>
+                `;
+                document.getElementById('navMyBookings').style.display = 'block';
+            } else {
+                throw new Error("Invalid token");
+            }
         } catch(e) {
-            console.error('Invalid token');
+            console.error('Lỗi khi lấy thông tin user:', e);
             localStorage.removeItem('jwt_token');
             isLoggedIn = false;
+            document.getElementById('userActions').innerHTML = `
+                <a href="login.html" class="btn-solid" style="padding: 6px 16px; font-size: 14px;">Đăng Nhập</a>
+            `;
         }
     } else {
         document.getElementById('userActions').innerHTML = `
