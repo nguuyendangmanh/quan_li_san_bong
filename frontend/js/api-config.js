@@ -1,6 +1,6 @@
 // Tất cả các thành viên khi gọi API phải nối thêm biến này ở đầu
-const API_URL = 'http://localhost:8080';
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_URL = 'https://quan-li-san-bong.onrender.com';
+const API_BASE_URL = 'https://quan-li-san-bong.onrender.com/api';
 
 // [TV1] Hàm gọi API fetch() chung, tự động nhét Token vào Header
 async function fetchAPI(endpoint, options = {}) {
