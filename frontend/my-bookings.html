@@ -95,7 +95,25 @@
 function checkAuth() {
     const token = localStorage.getItem('jwt_token');
     if (!token) { window.location.replace('login.html'); }
+    else { fetchUserProfile(); }
 }
+
+async function fetchUserProfile() {
+    try {
+        const res = await fetch(API_URL + '/api/auth/me', {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        if (res.ok) {
+            const user = await res.json();
+            const vipMap = { 'DONG': 'Đồng', 'BAC': 'Bạc', 'VANG': 'Vàng', 'KIMCUONG': 'Kim Cương' };
+            const tierName = vipMap[user.vipTier] || 'Đồng';
+            document.getElementById('userNameDisplay').innerText = `👤 ${user.fullName} - Hạng ${tierName}`;
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 checkAuth();
 
 async function loadMyBookings() {
