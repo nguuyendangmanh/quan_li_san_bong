@@ -106,5 +106,8 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
     // ── Lấy danh sách booking theo trạng thái và thời gian ───────────────────
     List<Booking> findByStatusAndCreatedAtBefore(String status, java.time.LocalDateTime time);
+
+    // ── Lấy danh sách cho Nhân viên theo các sân quản lý ────────────────────
+    List<Booking> findByFieldIdInOrderByCreatedAtDesc(List<Integer> fieldIds);
 }
 

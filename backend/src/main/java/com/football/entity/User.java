@@ -28,6 +28,11 @@ public class User {
     @Column(name = "loyalty_points")
     private Integer loyaltyPoints = 0;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_managed_fields", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "field_id")
+    private java.util.List<Integer> managedFieldIds;
+
     public User() {}
 
     public Long getId() { return id; }
@@ -44,4 +49,6 @@ public class User {
     public void setRole(String role) { this.role = role; }
     public Integer getLoyaltyPoints() { return loyaltyPoints; }
     public void setLoyaltyPoints(Integer loyaltyPoints) { this.loyaltyPoints = loyaltyPoints; }
+    public java.util.List<Integer> getManagedFieldIds() { return managedFieldIds; }
+    public void setManagedFieldIds(java.util.List<Integer> managedFieldIds) { this.managedFieldIds = managedFieldIds; }
 }

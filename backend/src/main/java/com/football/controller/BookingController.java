@@ -30,10 +30,10 @@ public class BookingController {
         }
     }
 
-    // Nhân viên/Admin lấy danh sách tất cả yêu cầu
+    // Nhân viên/Admin lấy danh sách yêu cầu
     @GetMapping
-    public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
-        return ResponseEntity.ok(fieldBookingService.getAllBookings());
+    public ResponseEntity<List<BookingResponseDTO>> getAllBookings(Authentication auth) {
+        return ResponseEntity.ok(fieldBookingService.getAllBookings(auth.getName()));
     }
 
     // Khách hàng xem lịch sử đặt sân của mình

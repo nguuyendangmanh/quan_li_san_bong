@@ -153,6 +153,12 @@
                 <label>Mật khẩu</label>
                 <input type="password" id="staffPassword" placeholder="Nhập mật khẩu...">
             </div>
+            <div class="form-group">
+                <label>Gán sân quản lý</label>
+                <div id="staffFieldsList" style="display:flex; flex-direction:column; gap:8px; max-height:150px; overflow-y:auto; padding:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:10px;">
+                    <div style="color:var(--text-muted); font-size:13px;">Đang tải danh sách sân...</div>
+                </div>
+            </div>
 
             <div class="modal-footer">
                 <button class="btn" style="background:rgba(255,255,255,0.05); color:var(--text-muted);" onclick="closeStaffModal()">Hủy</button>

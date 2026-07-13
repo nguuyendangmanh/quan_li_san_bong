@@ -129,8 +129,22 @@ public class FieldBookingService {
         return toResponseDTO(booking);
     }
     
-    public List<BookingResponseDTO> getAllBookings() {
-        return bookingRepository.findAllOrderByCreatedAtDesc().stream()
+    public List<BookingResponseDTO> getAllBookings(String username) {
+        User user = userRepository.findByPhone(username)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user."));
+                
+        List<Booking> bookings;
+        if ("ADMIN".equals(user.getRole())) {
+            bookings = bookingRepository.findAllOrderByCreatedAtDesc();
+        } else {
+            if (user.getManagedFieldIds() == null || user.getManagedFieldIds().isEmpty()) {
+                bookings = java.util.Collections.emptyList();
+            } else {
+                bookings = bookingRepository.findByFieldIdInOrderByCreatedAtDesc(user.getManagedFieldIds());
+            }
+        }
+        
+        return bookings.stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }

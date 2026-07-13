@@ -33,6 +33,7 @@ public class UserService {
         staff.setEmail(request.getEmail());
         staff.setPassword(passwordEncoder.encode(request.getPassword()));
         staff.setRole("STAFF");
+        staff.setManagedFieldIds(request.getManagedFieldIds());
 
         return userRepository.save(staff);
     }
