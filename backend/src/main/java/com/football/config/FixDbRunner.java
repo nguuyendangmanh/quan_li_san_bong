@@ -26,5 +26,19 @@ public class FixDbRunner implements CommandLineRunner {
         } catch (Exception e) {
             System.out.println("========== INFO: bookings_ibfk_1 NOT FOUND OR ALREADY DROPPED ==========");
         }
+
+        try {
+            jdbcTemplate.execute("DROP TABLE IF EXISTS payments");
+            System.out.println("========== SUCCESS: DROPPED payments table ==========");
+        } catch (Exception e) {
+            System.out.println("========== INFO: payments NOT FOUND OR DROP FAILED ==========");
+        }
+
+        try {
+            jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS user_managed_fields (user_id BIGINT NOT NULL, field_id INT NOT NULL)");
+            System.out.println("========== SUCCESS: CREATED user_managed_fields ==========");
+        } catch (Exception e) {
+            System.out.println("========== INFO: user_managed_fields creation failed: " + e.getMessage() + " ==========");
+        }
     }
 }
