@@ -16,6 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByPhone(String phone);
 
+    List<User> findByRole(String role);
+
     boolean existsByPhone(String phone);
 
     // Lấy danh sách khách hàng sắp xếp theo điểm giảm dần (dùng cho trang Quản lý VIP)

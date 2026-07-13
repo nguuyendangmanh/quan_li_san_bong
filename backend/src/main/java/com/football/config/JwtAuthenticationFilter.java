@@ -30,10 +30,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (jwt != null && tokenProvider.validateToken(jwt)) {
                 String phone = tokenProvider.getPhoneFromJWT(jwt);
+                String role = tokenProvider.getRoleFromJWT(jwt);
                 
-                // Cấp thẻ đi qua cho Request hợp lệ
+                // Cấp thẻ đi qua cho Request hợp lệ với quyền tương ứng
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        phone, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+                        phone, null, Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role)));
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);

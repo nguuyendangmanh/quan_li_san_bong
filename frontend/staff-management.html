@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Nhân Viên - Admin</title>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    
+    <style>
+        .badge {
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: bold;
+            color: white;
+            background-color: #8b5cf6;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .modal-box {
+            background: #1e293b;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 32px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow);
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .modal-title { font-size: 20px; font-weight: 700; }
+        .modal-close {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+        .form-group label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+        .form-group input {
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+        }
+        .form-group input:focus {
+            border-color: var(--primary);
+            background: rgba(14,165,233,0.05);
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===================== NAVBAR ===================== -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span class="logo">⚽</span>
+            Quản Lý <span>Nhân Viên</span>
+        </div>
+        <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;">
+            <a href="admin.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Khách VIP</a>
+            <a href="report.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Báo cáo doanh thu</a>
+            <a href="field.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Quản lý Sân</a>
+            <a href="staff-management.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Nhân viên</a>
+        </div>
+        <div class="navbar-right">
+            <span class="nav-badge">👤 Admin</span>
+            <a href="login.html" onclick="localStorage.removeItem('jwt_token')" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>👥 Quản Lý Nhân Viên</h1>
+                <p>Xem danh sách và cấp tài khoản cho nhân viên mới</p>
+            </div>
+            <button class="btn btn-primary" onclick="openStaffModal()">＋ Thêm nhân viên</button>
+        </div>
+
+        <div class="table-card">
+            <table class="table-base">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Họ và Tên</th>
+                        <th>Số điện thoại</th>
+                        <th>Email</th>
+                        <th>Chức vụ</th>
+                    </tr>
+                </thead>
+                <tbody id="staff-tbody">
+                    <tr><td colspan="5" style="text-align:center;">Đang tải...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal Thêm Nhân Viên -->
+    <div class="modal-overlay" id="staffModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2 class="modal-title">Tạo Tài Khoản Nhân Viên</h2>
+                <button class="modal-close" onclick="closeStaffModal()">✕</button>
+            </div>
+            <div id="staffError" style="color:#ef4444; margin-bottom:15px; font-size:14px; display:none;"></div>
+            
+            <div class="form-group">
+                <label>Họ và Tên</label>
+                <input type="text" id="staffName" placeholder="Nhập họ và tên...">
+            </div>
+            <div class="form-group">
+                <label>Số điện thoại (Dùng để đăng nhập)</label>
+                <input type="text" id="staffPhone" placeholder="Nhập SĐT...">
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="staffEmail" placeholder="Nhập Email...">
+            </div>
+            <div class="form-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="staffPassword" placeholder="Nhập mật khẩu...">
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn" style="background:rgba(255,255,255,0.05); color:var(--text-muted);" onclick="closeStaffModal()">Hủy</button>
+                <button class="btn btn-primary" onclick="createStaff()">Tạo tài khoản</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Guard kiểm tra quyền đăng nhập — chỉ ADMIN mới xem được -->
+    <script>
+        function checkAuth() {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                window.location.replace('login.html');
+                return;
+            }
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+                if (payload.role !== 'ADMIN') {
+                    window.location.replace('login.html');
+                }
+            } catch (e) {
+                localStorage.removeItem('jwt_token');
+                window.location.replace('login.html');
+            }
+        }
+        window.addEventListener('pageshow', checkAuth);
+        checkAuth();
+    </script>
+
+    <script src="js/api-config.js"></script>
+    <script src="js/staff-management.js"></script>
+</body>
+</html>

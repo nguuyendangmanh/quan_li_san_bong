@@ -38,6 +38,15 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+    public String getRoleFromJWT(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return (String) claims.get("role");
+    }
+
     // Kiểm tra Token còn hạn và hợp lệ không
     public boolean validateToken(String authToken) {
         try {

@@ -54,6 +54,8 @@ public class SecurityConfig {
                 // TẠM THỜI MỞ CỬA CHO TV2 (fields), TV4 (services) VÀ TV5 (reports) ĐỂ DỄ TEST CODE (TRƯỚC KHI NỘP BÀI CÓ THỂ ĐÓNG LẠI)
                 // Mở thêm /h2-console/** để xem Database khi dùng H2 (chỉ dùng khi test, ĐÓNG LẠI khi nộp bài)
                 .requestMatchers("/api/auth/**", "/error", "/api/fields/**", "/api/services/**", "/api/reports/**", "/h2-console/**").permitAll()
+                // Yêu cầu quyền ADMIN cho các API quản lý nhân viên
+                .requestMatchers("/api/users/staff").hasAuthority("ROLE_ADMIN")
                 // Tất cả các đường link khác (Ví dụ: Đặt sân, Lịch) đều bị chặn, bắt buộc phải có Token
                 .anyRequest().authenticated()
             )
