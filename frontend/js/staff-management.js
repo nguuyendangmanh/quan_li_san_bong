@@ -14,7 +14,7 @@ function closeStaffModal() {
 
 async function loadStaffList() {
     try {
-        const staffs = await fetchAPI('/api/users/staff');
+        const staffs = await fetchAPI('/users/staff');
         
         const tbody = document.getElementById('staff-tbody');
         if (staffs.length === 0) {
@@ -39,7 +39,7 @@ async function loadStaffList() {
 
 async function loadFields() {
     try {
-        const fields = await fetchAPI('/api/fields');
+        const fields = await fetchAPI('/fields');
         const container = document.getElementById('staffFieldsList');
         
         if (fields.length === 0) {
@@ -84,7 +84,7 @@ async function createStaff() {
     }
 
     try {
-        const response = await fetchAPI('/api/users/staff', {
+        const response = await fetchAPI('/users/staff', {
             method: 'POST',
             body: JSON.stringify({ fullName, phone, email, password, managedFieldIds })
         });
