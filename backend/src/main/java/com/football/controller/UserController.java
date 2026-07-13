@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @DeleteMapping("/staff/{id}")
-    public ResponseEntity<?> deleteStaff(@PathVariable Integer id) {
+    public ResponseEntity<?> deleteStaff(@PathVariable Long id) {
         try {
             userService.deleteStaff(id);
             return ResponseEntity.ok("{\"message\": \"Xóa nhân viên thành công\"}");
