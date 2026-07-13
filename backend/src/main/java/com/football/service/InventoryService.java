@@ -84,6 +84,7 @@ public class InventoryService {
     public void deleteService(Long id) {
         Service service = getServiceById(id);
         serviceRepository.delete(service);
+        serviceRepository.flush();
     }
 
     @Transactional

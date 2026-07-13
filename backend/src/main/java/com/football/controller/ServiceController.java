@@ -141,6 +141,8 @@ public class ServiceController {
         try {
             inventoryService.deleteService(id);
             return ResponseEntity.ok("{\"message\": \"Xóa dịch vụ thành công!\"}");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            return ResponseEntity.badRequest().body("{\"error\": \"Không thể xóa vì dịch vụ này đã có trong lịch sử đơn hàng. Hãy sửa tồn kho về 0!\"}");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body("{\"error\": \"" + e.getMessage() + "\"}");
         }

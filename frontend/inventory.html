@@ -286,7 +286,10 @@ async function deleteService(id) {
             const err = await res.json();
             alert('Lỗi: ' + (err.error || 'Không thể xóa'));
         }
-    } catch (e) {}
+    } catch (e) {
+        alert('Lỗi hệ thống hoặc dịch vụ này đã có người đặt, không thể xóa!');
+        console.error(e);
+    }
 }
 
 window.onload = initInventory;
