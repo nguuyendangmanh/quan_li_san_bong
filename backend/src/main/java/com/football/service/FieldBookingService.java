@@ -41,7 +41,10 @@ public class FieldBookingService {
         User user = userRepository.findByPhone(phone)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user với số điện thoại này."));
                 
-        // Kiểm tra giờ hợp lệ (phải từ giờ chẵn, v.d. 15:00)
+        // Kiểm tra giờ hợp lệ
+        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Lỗi: Không thể đặt sân trong quá khứ.");
+        }
         if (dto.getStartTime().isAfter(dto.getEndTime())) {
             throw new RuntimeException("Giờ bắt đầu phải trước giờ kết thúc.");
         }

@@ -362,8 +362,16 @@ function openBookingModal(id, name) {
     document.getElementById('bookingTitle').textContent = name;
     document.getElementById('priceEstimate').textContent = '-- ₫';
     
-    // Đặt ngày mặc định là hôm nay
-    document.getElementById('bookDate').valueAsDate = new Date();
+    // Đặt ngày mặc định là hôm nay và chặn quá khứ
+    const dateInput = document.getElementById('bookDate');
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    const todayStr = `${yyyy}-${mm}-${dd}`;
+    
+    dateInput.value = todayStr;
+    dateInput.min = todayStr;
     
     // Reset service inputs
     document.querySelectorAll('.qty-val').forEach(inp => inp.value = 0);
@@ -434,6 +442,13 @@ async function submitBooking() {
     const startISO = new Date(`${dateStr}T${startH.padStart(2, '0')}:00:00`).toISOString();
     const endISO = new Date(`${dateStr}T${endH.padStart(2, '0')}:00:00`).toISOString();
     
+    // Validate Real-time: Chặn giờ trong quá khứ
+    const now = new Date();
+    const startISO_date = new Date(startISO);
+    if (startISO_date < now) {
+        return alert('Lỗi: Bạn không thể đặt sân trong khung giờ đã trôi qua!');
+    }
+    
     // Lấy danh sách nước đã gọi
     const services = [];
     document.querySelectorAll('.qty-val').forEach(inp => {
@@ -466,7 +481,7 @@ async function submitBooking() {
             window.location.href = 'my-bookings.html';
         } else {
             const data = await res.json();
-            alert('Lỗi: ' + data.error);
+            alert('Lỗi: ' + (data.message || data.error || 'Đã xảy ra lỗi từ hệ thống.'));
             btn.innerHTML = '✅ Chốt Đặt Sân Ngay';
             btn.disabled = false;
         }
