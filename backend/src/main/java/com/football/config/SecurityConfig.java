@@ -55,7 +55,7 @@ public class SecurityConfig {
                 // Mở thêm /h2-console/** để xem Database khi dùng H2 (chỉ dùng khi test, ĐÓNG LẠI khi nộp bài)
                 .requestMatchers("/api/auth/**", "/error", "/api/fields/**", "/api/services/**", "/api/reports/**", "/h2-console/**").permitAll()
                 // Yêu cầu quyền ADMIN cho các API quản lý nhân viên
-                .requestMatchers("/api/users/staff").hasAuthority("ROLE_ADMIN")
+                .requestMatchers("/api/users/staff", "/api/users/staff/**").hasAuthority("ROLE_ADMIN")
                 // Tất cả các đường link khác (Ví dụ: Đặt sân, Lịch) đều bị chặn, bắt buộc phải có Token
                 .anyRequest().authenticated()
             )
