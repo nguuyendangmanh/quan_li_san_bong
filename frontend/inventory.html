@@ -37,6 +37,11 @@
     <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;" id="navLinks">
         <!-- JS sẽ render link tại đây -->
     </div>
+    <div style="margin-right: 20px;">
+        <select id="fieldSelect" style="padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); outline: none; font-weight: 500; cursor: pointer;" onchange="onGlobalFieldChange()">
+            <option value="" style="color: black;">-- Tất cả Sân --</option>
+        </select>
+    </div>
     <div class="navbar-right">
         <span class="nav-badge" id="userNameDisplay">👤 User</span>
         <a href="login.html" onclick="localStorage.removeItem('jwt_token')" style="color:var(--text-muted); font-size:13px; text-decoration:none;">Đăng xuất →</a>
@@ -50,9 +55,6 @@
             <p>Quản lý nước uống, đồ ăn nhẹ, cho thuê bóng/áo tập...</p>
         </div>
         <div style="display: flex; gap: 15px; align-items: center;">
-            <select id="fieldSelect" class="form-group" style="padding: 10px; border-radius: 8px; background: var(--bg-card); color: white; border: 1px solid var(--glass-border); outline: none;" onchange="loadAndRenderServices()">
-                <option value="">-- Chọn Sân --</option>
-            </select>
             <button class="btn btn-primary" onclick="openCreateModal()">＋ Thêm dịch vụ</button>
         </div>
     </div>
@@ -159,13 +161,24 @@ async function initInventory() {
                 const opt = document.createElement('option');
                 opt.value = f.id;
                 opt.textContent = f.name;
+                opt.style.color = 'black';
                 select.appendChild(opt);
             });
-            if(fields.length > 0) {
+            const savedFieldId = localStorage.getItem('global_field_id');
+            if(savedFieldId && fields.some(f => f.id == savedFieldId)) {
+                select.value = savedFieldId;
+            } else if(fields.length > 0) {
                 select.value = fields[0].id;
+                localStorage.setItem('global_field_id', fields[0].id);
             }
         }
     } catch(e) {}
+    loadAndRenderServices();
+}
+
+function onGlobalFieldChange() {
+    const val = document.getElementById('fieldSelect').value;
+    localStorage.setItem('global_field_id', val);
     loadAndRenderServices();
 }
 

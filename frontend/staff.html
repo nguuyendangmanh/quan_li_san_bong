@@ -41,9 +41,14 @@
         <span class="logo">⚽</span>
         Staff <span>Dashboard</span>
     </div>
-    <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;">
+    <div style="display: flex; gap: 15px; margin-right: auto; margin-left: 30px;" id="navLinks">
         <a href="staff.html" style="color:var(--primary); text-decoration:none; font-weight:600;">Lịch Đặt Sân</a>
         <a href="inventory.html" style="color:var(--text-muted); text-decoration:none; font-weight:600;">Kho Nước</a>
+    </div>
+    <div style="margin-right: 20px;">
+        <select id="globalFieldSelect" style="padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); outline: none; font-weight: 500; cursor: pointer;" onchange="onGlobalFieldChange()">
+            <option value="" style="color: black;">-- Tất cả Sân --</option>
+        </select>
     </div>
     <div class="navbar-right">
         <span class="nav-badge" id="staffNameDisplay">👤 Staff</span>
@@ -123,7 +128,13 @@ async function loadBookings() {
         const res = await fetch(API_URL + '/api/bookings', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
         });
-        const data = await res.json();
+        let data = await res.json();
+        
+        const selectedFieldId = document.getElementById('globalFieldSelect').value;
+        if (selectedFieldId) {
+            data = data.filter(b => b.fieldId == selectedFieldId);
+        }
+
         const tbody = document.getElementById('bookingTableBody');
         if (data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có đơn đặt sân nào</td></tr>';
@@ -261,7 +272,47 @@ async function submitOrder() {
     }
 }
 
-window.onload = () => {
+async function initFields() {
+    try {
+        const authRes = await fetch(API_URL + '/api/auth/me', {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('jwt_token') }
+        });
+        let currentUser = null;
+        if(authRes.ok) currentUser = await authRes.json();
+        
+        const fieldRes = await fetch(API_URL + '/api/fields');
+        if(fieldRes.ok) {
+            let fields = await fieldRes.json();
+            if(currentUser && currentUser.role === 'STAFF') {
+                fields = fields.filter(f => currentUser.managedFieldIds && currentUser.managedFieldIds.includes(f.id));
+            }
+            const select = document.getElementById('globalFieldSelect');
+            fields.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.id;
+                opt.textContent = f.name;
+                opt.style.color = 'black';
+                select.appendChild(opt);
+            });
+            const savedFieldId = localStorage.getItem('global_field_id');
+            if(savedFieldId && fields.some(f => f.id == savedFieldId)) {
+                select.value = savedFieldId;
+            } else if(fields.length > 0) {
+                select.value = fields[0].id;
+                localStorage.setItem('global_field_id', fields[0].id);
+            }
+        }
+    } catch(e) {}
+}
+
+function onGlobalFieldChange() {
+    const val = document.getElementById('globalFieldSelect').value;
+    localStorage.setItem('global_field_id', val);
+    loadBookings();
+}
+
+window.onload = async () => {
+    await initFields();
     loadBookings();
 };
 </script>
