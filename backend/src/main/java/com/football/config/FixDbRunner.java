@@ -37,7 +37,7 @@ public class FixDbRunner implements CommandLineRunner {
         }
 
         try {
-            jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS user_managed_fields (user_id BIGINT NOT NULL, field_id INT NOT NULL)");
+            jdbcTemplate.execute("CREATE TABLE IF NOT EXISTS user_managed_fields (user_id BIGINT NOT NULL, field_id INT NOT NULL, PRIMARY KEY (user_id, field_id))");
             System.out.println("========== SUCCESS: CREATED user_managed_fields ==========");
         } catch (Exception e) {
             System.out.println("========== INFO: user_managed_fields creation failed: " + e.getMessage() + " ==========");
