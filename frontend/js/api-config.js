@@ -1,6 +1,8 @@
-// Tất cả các thành viên khi gọi API phải nối thêm biến này ở đầu
-const API_URL = 'https://quan-li-san-bong.onrender.com';
-const API_BASE_URL = 'https://quan-li-san-bong.onrender.com/api';
+// Tự động nhận diện môi trường: Nếu chạy ở máy (localhost) thì gọi Backend máy, nếu chạy trên mạng thì gọi Backend Cloud
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+
+const API_URL = isLocal ? 'http://localhost:8080' : 'https://quan-li-san-bong.onrender.com';
+const API_BASE_URL = isLocal ? 'http://localhost:8080/api' : 'https://quan-li-san-bong.onrender.com/api';
 
 // [TV1] Hàm gọi API fetch() chung, tự động nhét Token vào Header
 async function fetchAPI(endpoint, options = {}) {

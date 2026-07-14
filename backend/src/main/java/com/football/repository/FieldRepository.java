@@ -15,6 +15,9 @@ import java.util.List;
 @Repository
 public interface FieldRepository extends JpaRepository<Field, Long> {
 
+    @org.springframework.data.jpa.repository.EntityGraph(attributePaths = {"priceConfigs"})
+    List<Field> findAll();
+
     /**
      * Tìm danh sách sân theo loại (5 người / 7 người / 11 người).
      * Spring Data JPA tự động dịch tên hàm thành câu SQL:

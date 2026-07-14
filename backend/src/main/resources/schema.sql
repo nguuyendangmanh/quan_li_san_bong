@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS football_fields (
     field_type INT NOT NULL, /* Ví dụ: 5, 7, 11 */
     price_per_hour DECIMAL(10, 2) NOT NULL,
     image_url VARCHAR(255),
-    status VARCHAR(50) DEFAULT 'AVAILABLE'
+    status VARCHAR(50) DEFAULT 'AVAILABLE',
+    description TEXT,
+    address VARCHAR(255)
 );
 
 CREATE TABLE IF NOT EXISTS price_configs (

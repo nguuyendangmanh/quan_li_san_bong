@@ -309,8 +309,8 @@ public class FieldService {
      * @return FieldResponseDTO đã được điền đầy đủ thông tin
      */
     private FieldResponseDTO convertToResponseDTO(Field field) {
-        // Lấy danh sách PriceConfig từ DB (không dùng lazy load của JPA để tránh N+1 problem)
-        List<PriceConfigDTO> configDTOs = priceConfigRepository.findByFieldId(field.getId())
+        // Fix N+1: Đã dùng EntityGraph ở Repository, giờ chỉ cần get thẳng từ Entity (không query DB nữa)
+        List<PriceConfigDTO> configDTOs = field.getPriceConfigs()
                 .stream()
                 .map(pc -> new PriceConfigDTO(
                         pc.getId(), pc.getStartHour(), pc.getEndHour(),
