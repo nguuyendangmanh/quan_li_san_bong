@@ -11,6 +11,12 @@ CREATE TABLE IF NOT EXISTS users (
     loyalty_points INT DEFAULT 0
 );
 
+CREATE TABLE IF NOT EXISTS user_managed_fields (
+    user_id BIGINT NOT NULL,
+    field_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE TABLE IF NOT EXISTS football_fields (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -47,7 +53,9 @@ CREATE TABLE IF NOT EXISTS services (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    stock_quantity INT DEFAULT 0
+    stock_quantity INT DEFAULT 0,
+    field_id BIGINT,
+    is_deleted BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS booking_services (
@@ -55,6 +63,7 @@ CREATE TABLE IF NOT EXISTS booking_services (
     booking_id BIGINT NOT NULL,
     service_id BIGINT NOT NULL,
     quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
     subtotal DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (booking_id) REFERENCES bookings(id),
     FOREIGN KEY (service_id) REFERENCES services(id)
