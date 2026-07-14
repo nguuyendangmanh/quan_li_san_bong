@@ -77,6 +77,18 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
+
+		<!-- 7. Spring Boot Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -87,6 +99,13 @@
 				<configuration>
 					<!-- Chỉ định rõ class chứa hàm main để tránh lỗi ClassNotFoundException -->
 					<mainClass>com.football.FootballApp</mainClass>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>-Dnet.bytebuddy.experimental=true</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
