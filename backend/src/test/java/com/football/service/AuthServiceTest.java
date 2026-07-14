@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import com.football.service.CustomerService;
 
 import java.util.Optional;
 
@@ -32,6 +33,9 @@ public class AuthServiceTest {
 
     @Mock
     private JwtTokenProvider jwtTokenProvider;
+
+    @Mock
+    private CustomerService customerService;
 
     @InjectMocks
     private AuthService authService;
