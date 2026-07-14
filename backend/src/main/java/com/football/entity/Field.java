@@ -8,7 +8,7 @@ import java.util.List;
  * Mỗi đối tượng Field tương ứng với 1 sân bóng thực tế trong hệ thống.
  */
 @Entity
-@Table(name = "fields")
+@Table(name = "football_fields")
 public class Field {
 
     @Id
